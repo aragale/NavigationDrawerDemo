@@ -13,14 +13,11 @@ import com.mindorks.placeholderview.annotations.View;
 @Layout(R.layout.drawer_item)
 public class DrawerMenuItem {
 
-    public static final int DRAWER_MENU_ITEM_PROFILE = 1;
-//    public static final int DRAWER_MENU_ITEM_REQUESTS = 2;
-//    public static final int DRAWER_MENU_ITEM_GROUPS = 3;
-    public static final int DRAWER_MENU_ITEM_MESSAGE = 4;
-//    public static final int DRAWER_MENU_ITEM_NOTIFICATIONS = 5;
-    public static final int DRAWER_MENU_ITEM_SETTINGS = 6;
-//    public static final int DRAWER_MENU_ITEM_TERMS = 7;
-//    public static final int DRAWER_MENU_ITEM_LOGOUT = 8;
+    public static final int DRAWER_MENU_ITEM_LOGIN = 1;
+    public static final int DRAWER_MENU_ITEM_FOOTPRINTS = 2;
+    public static final int DRAWER_MENU_ITEM_SHARE = 3;
+    public static final int DRAWER_MENU_ITEM_CLOUD = 4;
+    public static final int DRAWER_MENU_ITEM_SETTINGS = 5;
 
     private int mMenuPosition;
     private Context mContext;
@@ -40,76 +37,52 @@ public class DrawerMenuItem {
     @Resolve
     private void onResolved() {
         switch (mMenuPosition){
-            case DRAWER_MENU_ITEM_PROFILE:
-                itemNameTxt.setText("用户");
+            case DRAWER_MENU_ITEM_LOGIN:
+                itemNameTxt.setText("登录");
                 itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_account_circle_black_18dp));
                 break;
-//            case DRAWER_MENU_ITEM_REQUESTS:
-//                itemNameTxt.setText("Requests");
-//                itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_compare_arrows_black_18dp));
-//                break;
-//            case DRAWER_MENU_ITEM_GROUPS:
-//                itemNameTxt.setText("Groups");
-//                itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_group_work_black_18dp));
-//                break;
-            case DRAWER_MENU_ITEM_MESSAGE:
+            case DRAWER_MENU_ITEM_FOOTPRINTS:
+                itemNameTxt.setText("足迹");
+                itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_footprints_black_18dp));
+                break;
+            case DRAWER_MENU_ITEM_SHARE:
                 itemNameTxt.setText("分享");
                 itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_share_black_18dp));
                 break;
-//            case DRAWER_MENU_ITEM_NOTIFICATIONS:
-//                itemNameTxt.setText("Notifications");
-//                itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_notifications_black_18dp));
-//                break;
+            case DRAWER_MENU_ITEM_CLOUD:
+                itemNameTxt.setText("云同步");
+                itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_cloud_upload_black_18dp));
+                break;
             case DRAWER_MENU_ITEM_SETTINGS:
                 itemNameTxt.setText("设置");
                 itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_settings_black_24dp));
                 break;
-//            case DRAWER_MENU_ITEM_TERMS:
-//                itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_book_black_18dp));
-//                itemNameTxt.setText("Terms");
-//                break;
-//            case DRAWER_MENU_ITEM_LOGOUT:
-//                itemIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_exit_to_app_black_18dp));
-//                itemNameTxt.setText("Logout");
-//                break;
         }
     }
 
     @Click(R.id.mainView)
     private void onMenuItemClick(){
         switch (mMenuPosition){
-            case DRAWER_MENU_ITEM_PROFILE:
+            case DRAWER_MENU_ITEM_LOGIN:
                 Toast.makeText(mContext, "Profile", Toast.LENGTH_SHORT).show();
-                if(mCallBack != null)mCallBack.onProfileMenuSelected();
+                if(mCallBack != null)mCallBack.onLoginMenuSelected();
                 break;
-//            case DRAWER_MENU_ITEM_REQUESTS:
-//                Toast.makeText(mContext, "Requests", Toast.LENGTH_SHORT).show();
-//                if(mCallBack != null)mCallBack.onRequestMenuSelected();
-//                break;
-//            case DRAWER_MENU_ITEM_GROUPS:
-//                Toast.makeText(mContext, "Groups", Toast.LENGTH_SHORT).show();
-//                if(mCallBack != null)mCallBack.onGroupsMenuSelected();
-//                break;
-            case DRAWER_MENU_ITEM_MESSAGE:
+            case DRAWER_MENU_ITEM_FOOTPRINTS:
+                Toast.makeText(mContext, "Requests", Toast.LENGTH_SHORT).show();
+                if(mCallBack != null)mCallBack.onFootprintsMenuSelected();
+                break;
+            case DRAWER_MENU_ITEM_SHARE:
                 Toast.makeText(mContext, "Messages", Toast.LENGTH_SHORT).show();
-                if(mCallBack != null)mCallBack.onMessagesMenuSelected();
+                if(mCallBack != null)mCallBack.onShareMenuSelected();
                 break;
-//            case DRAWER_MENU_ITEM_NOTIFICATIONS:
-//                Toast.makeText(mContext, "Notifications", Toast.LENGTH_SHORT).show();
-//                if(mCallBack != null)mCallBack.onNotificationsMenuSelected();
-//                break;
+            case DRAWER_MENU_ITEM_CLOUD:
+                Toast.makeText(mContext, "Notifications", Toast.LENGTH_SHORT).show();
+                if(mCallBack != null)mCallBack.onCloudMenuSelected();
+                break;
             case DRAWER_MENU_ITEM_SETTINGS:
                 Toast.makeText(mContext, "Settings", Toast.LENGTH_SHORT).show();
                 if(mCallBack != null)mCallBack.onSettingsMenuSelected();
                 break;
-//            case DRAWER_MENU_ITEM_TERMS:
-//                Toast.makeText(mContext, "Terms", Toast.LENGTH_SHORT).show();
-//                if(mCallBack != null)mCallBack.onTermsMenuSelected();
-//                break;
-//            case DRAWER_MENU_ITEM_LOGOUT:
-//                Toast.makeText(mContext, "Logout", Toast.LENGTH_SHORT).show();
-//                if(mCallBack != null)mCallBack.onLogoutMenuSelected();
-//                break;
         }
     }
 
@@ -118,13 +91,10 @@ public class DrawerMenuItem {
     }
 
     public interface DrawerCallBack{
-        void onProfileMenuSelected();
-        void onRequestMenuSelected();
-        void onGroupsMenuSelected();
-        void onMessagesMenuSelected();
-        void onNotificationsMenuSelected();
+        void onLoginMenuSelected();
+        void onFootprintsMenuSelected();
+        void onShareMenuSelected();
+        void onCloudMenuSelected();
         void onSettingsMenuSelected();
-        void onTermsMenuSelected();
-        void onLogoutMenuSelected();
     }
 }
