@@ -1,5 +1,7 @@
 package com.example.yuze.navigationdrawerdemo;
 
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.baidu.location.LocationClient;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.TextureMapView;
@@ -22,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private TextureMapView mMapView;
     private BaiduMap mBaiduMap;
 
+    LocationClient locationClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
 
         mMapView = findViewById(R.id.mTexturemap);//地图初始化
         mBaiduMap = mMapView.getMap();
+
+        mBaiduMap.setMyLocationEnabled(true);//开启定位图层
+        locationClient = new LocationClient(this);
+
+        locationClient.start();
 
         mDrawer = findViewById(R.id.drawerLayout);
         mDrawerView = findViewById(R.id.drawerView);
@@ -65,13 +75,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        locationClient.stop();//退出时销毁定位
         mMapView.onDestroy();
+        mBaiduMap.setMyLocationEnabled(false);//关闭定位图层
     }
 
     @Override
     protected void onResume(){
         super.onResume();
         mMapView.onResume();
+//        sensorManager.registerListener(this,sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override

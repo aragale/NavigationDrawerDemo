@@ -1,6 +1,7 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,7 +12,7 @@ import com.mindorks.placeholderview.annotations.Resolve;
 import com.mindorks.placeholderview.annotations.View;
 
 @Layout(R.layout.drawer_item)
-public class DrawerMenuItem {
+public class DrawerMenuItem{
 
     public static final int DRAWER_MENU_ITEM_LOGIN = 1;
     public static final int DRAWER_MENU_ITEM_FOOTPRINTS = 2;
@@ -35,7 +36,7 @@ public class DrawerMenuItem {
     }
 
     @Resolve
-    private void onResolved() {
+    private void onCreateMenu() {
         switch (mMenuPosition){
             case DRAWER_MENU_ITEM_LOGIN:
                 itemNameTxt.setText("登录");
@@ -61,9 +62,12 @@ public class DrawerMenuItem {
     }
 
     @Click(R.id.mainView)
-    private void onMenuItemClick(){
+    public void onMenuItemClick(){
         switch (mMenuPosition){
             case DRAWER_MENU_ITEM_LOGIN:
+                Intent intent = new Intent(mContext,Login.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
                 Toast.makeText(mContext, "Profile", Toast.LENGTH_SHORT).show();
                 if(mCallBack != null)mCallBack.onLoginMenuSelected();
                 break;
@@ -97,4 +101,5 @@ public class DrawerMenuItem {
         void onCloudMenuSelected();
         void onSettingsMenuSelected();
     }
+
 }
