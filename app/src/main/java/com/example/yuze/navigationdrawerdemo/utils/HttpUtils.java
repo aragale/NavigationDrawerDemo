@@ -1,4 +1,6 @@
-package com.example.yuze.navigationdrawerdemo;
+package com.example.yuze.navigationdrawerdemo.utils;
+
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -15,15 +17,23 @@ public class HttpUtils {
     private static final OkHttpClient client = new OkHttpClient();
 
     /**
-     * posts data
+     * post and return response
+     * @param url URL
+     * @param json request body
+     * @return return response string if succeed, or null
      */
-    public static String post(String url, String json) throws IOException {
+    public static String post(String url, String json) {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
-        Response response = client.newCall(request).execute();
-        return response.body().string();
+        try {
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            Log.e("HttpUtils", "POST Exception", e);
+            return null;
+        }
     }
 }

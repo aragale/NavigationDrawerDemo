@@ -1,10 +1,8 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.content.Intent;
-import android.os.StrictMode;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,9 +12,7 @@ import android.widget.Toast;
 
 import com.example.yuze.navigationdrawerdemo.dto.SignInRequest;
 import com.example.yuze.navigationdrawerdemo.dto.SignInResponse;
-import com.example.yuze.navigationdrawerdemo.dto.SignUpRequest;
-import com.example.yuze.navigationdrawerdemo.dto.SignUpResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Login extends AppCompatActivity {
@@ -46,10 +42,10 @@ public class Login extends AppCompatActivity {
         registebtn.setOnClickListener(m_login_listener);
         login_cancle_btn.setOnClickListener(m_login_listener);
 
-        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder()
-                .permitAll()
-                .build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder()
+//                .permitAll()
+//                .build();
+//        StrictMode.setThreadPolicy(policy);
     }
 
     View.OnClickListener m_login_listener = new View.OnClickListener() {

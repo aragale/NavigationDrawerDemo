@@ -1,9 +1,8 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.content.Intent;
-import android.os.StrictMode;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,7 +11,10 @@ import android.widget.Toast;
 
 import com.example.yuze.navigationdrawerdemo.dto.SignUpRequest;
 import com.example.yuze.navigationdrawerdemo.dto.SignUpResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
+import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
+
+import java.util.concurrent.CompletableFuture;
 
 public class Register extends AppCompatActivity {
 
@@ -21,8 +23,6 @@ public class Register extends AppCompatActivity {
     private EditText pwdcheckEtxt;  //密码编辑
     private Button mSureButton;  //确定按钮
     private Button mCancelButton;//取消按钮
-
-    final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +39,11 @@ public class Register extends AppCompatActivity {
         //注册界面两个按钮的监听事件
         mSureButton.setOnClickListener(m_register_Listener);
         mCancelButton.setOnClickListener(m_register_Listener);
-
-        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder()
-                .permitAll()
-                .build();
-        StrictMode.setThreadPolicy(policy);
+//
+//        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder()
+//                .permitAll()
+//                .build();
+//        StrictMode.setThreadPolicy(policy);
     }
 
     View.OnClickListener m_register_Listener = new View.OnClickListener() {
@@ -62,20 +62,22 @@ public class Register extends AppCompatActivity {
     };
 
     public void register_check() {
-        if(usernameEtxt.getText() == null){
-            Log.i("username",usernameEtxt.getText().toString());
-            Toast.makeText(this,getString(R.string.account_empty),Toast.LENGTH_SHORT).show();
-        }else if(passwdEtxt.getText() == null){
-            Log.i("password",passwdEtxt.getText().toString());
-            Toast.makeText(this,getString(R.string.pwd_empty),Toast.LENGTH_SHORT).show();
-        }else if (!pwdcheckEtxt.getText().toString().equals(passwdEtxt.getText().toString())){
-            Log.i("passwordcheck",pwdcheckEtxt.getText().toString());
-            Toast.makeText(this,getString(R.string.pwd_not_same),Toast.LENGTH_SHORT).show();
-        }
-        else {
+        if (usernameEtxt.getText() == null) {
+            Log.i("username", usernameEtxt.getText().toString());
+            Toast.makeText(this, getString(R.string.account_empty), Toast.LENGTH_SHORT).show();
+        } else if (passwdEtxt.getText() == null) {
+            Log.i("password", passwdEtxt.getText().toString());
+            Toast.makeText(this, getString(R.string.pwd_empty), Toast.LENGTH_SHORT).show();
+        } else if (!pwdcheckEtxt.getText().toString().equals(passwdEtxt.getText().toString())) {
+            Log.i("passwordcheck", pwdcheckEtxt.getText().toString());
+            Toast.makeText(this, getString(R.string.pwd_not_same), Toast.LENGTH_SHORT).show();
+        } else {
             signUp();
         }
     }
+
+    //private volatile String signUpResponseJson = null;
+    //private volatile int signUpResponseSuccess = 0;
 
     public void signUp() {
         final SignUpRequest signUpRequest = SignUpRequest.builder()
@@ -83,19 +85,47 @@ public class Register extends AppCompatActivity {
                 .password(passwdEtxt.getText().toString())
                 .build();
         try {
-            final String signUpRequestJson = objectMapper.writeValueAsString(signUpRequest);
-            final String signUpResponseJson = HttpUtils.post(
-                    Constants.HOST + Constants.USERS,
-                    signUpRequestJson);
-            final SignUpResponse signUpResponse = objectMapper.readValue(signUpResponseJson, SignUpResponse.class);
-            if (signUpResponse.getId() == null){
-                Toast.makeText(this,R.string.register_fail,Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this,R.string.register_success,Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this,Login.class);
-                startActivity(intent);
-                finish();
+            final String signUpRequestJson = JsonUtils.write(signUpRequest);
+            //String signUpResponseJson = null;
+            /*new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        signUpResponseSuccess = 2;
+                        signUpResponseJson = HttpUtils.post(
+                                Constants.HOST + Constants.USERS,
+                                signUpRequestJson);
+                        signUpResponseSuccess = 1;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        signUpResponseSuccess = -1;
+                    }
+                }
+            }).start();
+            // poll, lun xun
+            while (signUpResponseSuccess != 2 && signUpResponseSuccess == 0) {
+                TimeUnit.MILLISECONDS.sleep(500L);
             }
+            if (signUpResponseSuccess == -1) {
+                Toast.makeText(this, R.string.register_fail, Toast.LENGTH_SHORT).show();
+            }*/
+            //for api capability, change min sdk version to 27, then this warning gone
+            final CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> HttpUtils.post(
+                    Constants.HOST + Constants.USERS,
+                    signUpRequestJson));
+            future.thenApply(signUpResponseJson -> {
+                final SignUpResponse signUpResponse = JsonUtils.read(signUpResponseJson, SignUpResponse.class);
+                if (signUpResponse == null || signUpResponse.getId() == null) {
+                    Toast.makeText(this, R.string.register_fail, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, Login.class);
+                    startActivity(intent);
+                    finish();
+                }
+                return null;
+            }).get();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
