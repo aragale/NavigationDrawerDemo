@@ -3,6 +3,7 @@ package com.example.yuze.navigationdrawerdemo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.yuze.navigationdrawerdemo.dto.SignInResponse;
 import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.NonReusable;
 import com.mindorks.placeholderview.annotations.Resolve;
@@ -12,20 +13,22 @@ import com.mindorks.placeholderview.annotations.View;
 @Layout(R.layout.drawer_header)
 
 public class DrawerHeader {
+
+    SignInResponse signInResponse = new SignInResponse();
+
     @View(R.id.profileImageView)
-    private ImageView profileImage;
+     ImageView profileImage;
 
     @View(R.id.nameTxt)
-    private TextView nameTxt;
-
-    @View(R.id.emailTxt)
-    private TextView emailTxt;
+     TextView nameTxt;
 
     @Resolve
-    private void onResolved() {
+    public void onResolved() {
+        if (signInResponse.getSession() == null){
+            nameTxt.setText("未登录");
+        }else {
 
-//        nameTxt.setText("未登录");
-//        emailTxt.setText("janishar.ali@gmail.com");
+        }
     }
 
 }

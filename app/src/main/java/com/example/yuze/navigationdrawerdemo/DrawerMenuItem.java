@@ -25,10 +25,10 @@ public class DrawerMenuItem{
     private DrawerCallBack mCallBack;
 
     @View(R.id.itemNameTxt)
-    private TextView itemNameTxt;
+     TextView itemNameTxt;
 
     @View(R.id.itemIcon)
-    private ImageView itemIcon;
+     ImageView itemIcon;
 
     public DrawerMenuItem(Context context, int menuPosition) {
         mContext = context;
@@ -36,7 +36,7 @@ public class DrawerMenuItem{
     }
 
     @Resolve
-    private void onCreateMenu() {
+    public void onCreateMenu() {
         switch (mMenuPosition){
             case DRAWER_MENU_ITEM_LOGIN:
                 itemNameTxt.setText("登录");
