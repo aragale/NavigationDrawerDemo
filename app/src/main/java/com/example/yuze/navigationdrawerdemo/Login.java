@@ -17,14 +17,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Login extends AppCompatActivity {
 
+    final ObjectMapper objectMapper = new ObjectMapper();
     private Button loginbtn;
     private Button registebtn;
     private Button login_cancle_btn;
     private EditText usernameEtxt;
     private EditText passwdEtxt;
+    View.OnClickListener m_login_listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.login_btn_login:
+                    signIn();
+                    break;
+                case R.id.login_btn_register:
+                    Intent intent = new Intent(Login.this, Register.class);
+                    startActivity(intent);
+                    break;
+                case R.id.login_btn_cancle:
+                    break;
+            }
+        }
+    };
     private CheckBox rememberpw;
-
-    final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,23 +62,6 @@ public class Login extends AppCompatActivity {
 //                .build();
 //        StrictMode.setThreadPolicy(policy);
     }
-
-    View.OnClickListener m_login_listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.login_btn_login:
-                    signIn();
-                    break;
-                case R.id.login_btn_register:
-                    Intent intent = new Intent(Login.this,Register.class);
-                    startActivity(intent);
-                    break;
-                case R.id.login_btn_cancle:
-                    break;
-            }
-        }
-    };
 
     public void signIn() {
         final SignInRequest signInRequest = SignInRequest.builder()

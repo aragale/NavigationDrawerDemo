@@ -1,5 +1,7 @@
 package com.example.yuze.navigationdrawerdemo.utils;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,6 +23,7 @@ public class JsonUtils {
         try {
             return OBJECT_MAPPER.writeValueAsString(o);
         } catch (JsonProcessingException e) {
+            Log.e(JsonUtils.class.getName(), "Json write", e);
             return null;
         }
     }
@@ -36,6 +39,7 @@ public class JsonUtils {
         try {
             return OBJECT_MAPPER.readValue(json, clazz);
         } catch (IOException e) {
+            Log.d(JsonUtils.class.getName(), "Json read", e);
             return null;
         }
     }
