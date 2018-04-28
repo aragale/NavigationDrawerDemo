@@ -12,11 +12,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:gravity="left|center"
             android:layout_gravity="center"
-            android:textSize="18sp"
-            android:text="@string/login"/>
+            android:gravity="left|center"
+            android:text="@string/login"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
     </android.support.v7.widget.Toolbar>
 

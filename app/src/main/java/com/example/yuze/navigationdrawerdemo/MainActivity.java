@@ -1,11 +1,9 @@
 package com.example.yuze.navigationdrawerdemo;
 
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
@@ -17,15 +15,13 @@ import com.mindorks.placeholderview.PlaceHolderView;
 
 public class MainActivity extends AppCompatActivity {
 
+    LocationClient locationClient;
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
     private PlaceHolderView mGalleryView;
-
     private TextureMapView mMapView;
     private BaiduMap mBaiduMap;
-
-    LocationClient locationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setupDrawer();
     }
 
-    private void setupDrawer(){
+    private void setupDrawer() {
         mDrawerView
                 .addView(new DrawerHeader())
                 .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_LOGIN))
@@ -57,11 +53,12 @@ public class MainActivity extends AppCompatActivity {
                 .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_CLOUD))
                 .addView(new DrawerMenuItem(this.getApplicationContext(), DrawerMenuItem.DRAWER_MENU_ITEM_SETTINGS));
 
-        ActionBarDrawerToggle  drawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.open_drawer, R.string.close_drawer){
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.open_drawer, R.string.close_drawer) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
             }
+
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
@@ -73,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         locationClient.stop();//退出时销毁定位
         mMapView.onDestroy();
@@ -81,14 +78,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         mMapView.onResume();
 //        sensorManager.registerListener(this,sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
         mMapView.onPause();
     }

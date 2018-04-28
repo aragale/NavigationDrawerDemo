@@ -46,7 +46,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        loginbtn =  findViewById(R.id.login_btn_login);
+        loginbtn = findViewById(R.id.login_btn_login);
         registebtn = findViewById(R.id.login_btn_register);
         login_cancle_btn = findViewById(R.id.login_btn_cancle);
         usernameEtxt = findViewById(R.id.login_edit_account);
@@ -70,16 +70,16 @@ public class Login extends AppCompatActivity {
                 .build();
         try {
             final String signInRequestJson = objectMapper.writeValueAsString(signInRequest);
-            Log.i("signInRequestJson",signInRequestJson);
+            Log.i("signInRequestJson", signInRequestJson);
             final String signInResponseJson = HttpUtils.post(
-                    Constants.HOST + Constants.SESSIONS,signInRequestJson);
+                    Constants.HOST + Constants.SESSIONS, signInRequestJson);
             final SignInResponse signInResponse = objectMapper.readValue(signInResponseJson, SignInResponse.class);
-            Log.i("signInResponse",signInResponse.toString());
-            if (signInResponse.getSession() == null){
-                Toast.makeText(this,R.string.login_fail,Toast.LENGTH_SHORT).show();
-            }else {
-                Toast.makeText(this,R.string.login_success,Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this,MainActivity.class);
+            Log.i("signInResponse", signInResponse.toString());
+            if (signInResponse.getSession() == null) {
+                Toast.makeText(this, R.string.login_fail, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }

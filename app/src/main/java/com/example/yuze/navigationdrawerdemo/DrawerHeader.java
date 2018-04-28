@@ -17,16 +17,16 @@ public class DrawerHeader {
     SignInResponse signInResponse = new SignInResponse();
 
     @View(R.id.profileImageView)
-     ImageView profileImage;
+    ImageView profileImage;
 
     @View(R.id.nameTxt)
-     TextView nameTxt;
+    TextView nameTxt;
 
     @Resolve
     public void onResolved() {
-        if (signInResponse.getSession() == null){
+        if (signInResponse.getSession() == null) {
             nameTxt.setText("未登录");
-        }else {
+        } else {
 
         }
     }
