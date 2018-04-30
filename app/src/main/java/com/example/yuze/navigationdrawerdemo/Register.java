@@ -15,6 +15,9 @@ import com.example.yuze.navigationdrawerdemo.dto.SignUpResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
+/**
+ * 用户注册
+ */
 public class Register extends AppCompatActivity {
 
     private EditText usernameEtxt;   //用户名编辑
@@ -78,7 +81,7 @@ public class Register extends AppCompatActivity {
     }
 
     /**
-     * Register Task
+     * 注册任务
      */
     private class RegisterTask extends AsyncTask<String, Void, String> {
         @Override
