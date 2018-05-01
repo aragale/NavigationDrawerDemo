@@ -21,16 +21,12 @@
             android:layout_height="wrap_content"
             android:scrollbars="vertical" />
 
-        <com.baidu.mapapi.map.TextureMapView
-            android:id="@+id/mTexturemap"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <!--<ImageButton-->
-        <!--android:id="@+id/login_button"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:src="@drawable/ic_my_location_black_18dp"-->
-        <!--/>-->
+            <com.baidu.mapapi.map.TextureMapView
+                android:id="@+id/mTexturemap"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </com.baidu.mapapi.map.TextureMapView>
+
     </LinearLayout>
 
     <FrameLayout
