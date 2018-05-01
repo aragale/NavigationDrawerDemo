@@ -1,6 +1,7 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,7 +13,9 @@ import android.widget.Toast;
 
 import com.example.yuze.navigationdrawerdemo.dto.SignInRequest;
 import com.example.yuze.navigationdrawerdemo.dto.SignInResponse;
+import com.example.yuze.navigationdrawerdemo.dto.SignUpResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
+import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Login extends AppCompatActivity {
@@ -57,10 +60,6 @@ public class Login extends AppCompatActivity {
         registebtn.setOnClickListener(m_login_listener);
         login_cancle_btn.setOnClickListener(m_login_listener);
 
-//        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder()
-//                .permitAll()
-//                .build();
-//        StrictMode.setThreadPolicy(policy);
     }
 
     public void signIn() {
@@ -68,23 +67,32 @@ public class Login extends AppCompatActivity {
                 .userName(usernameEtxt.getText().toString())
                 .password(passwdEtxt.getText().toString())
                 .build();
-        try {
-            final String signInRequestJson = objectMapper.writeValueAsString(signInRequest);
-            Log.i("signInRequestJson", signInRequestJson);
-            final String signInResponseJson = HttpUtils.post(
-                    Constants.HOST + Constants.SESSIONS, signInRequestJson);
-            final SignInResponse signInResponse = objectMapper.readValue(signInResponseJson, SignInResponse.class);
-            Log.i("signInResponse", signInResponse.toString());
+        final String signInRequestJson = JsonUtils.write(signInRequest);
+        new LoginTask().execute(signInRequestJson);
+    }
+
+    private class LoginTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            final SignInResponse signInResponse = JsonUtils.read(s, SignInResponse.class);
             if (signInResponse.getSession() == null) {
-                Toast.makeText(this, R.string.login_fail, Toast.LENGTH_SHORT).show();
+                Log.i("session",signInResponse.getSession());
+                Toast.makeText(Login.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, MainActivity.class);
+                Toast.makeText(Login.this, R.string.login_success, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Login.this, MainActivity.class);
                 startActivity(intent);
                 finish();
+                State.INSTANCE.sessionId = signInResponse.getSession();
+                State.INSTANCE.userId = signInResponse.getUserId();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return HttpUtils.post(
+                    Constants.HOST + Constants.SESSIONS,
+                    strings[0]);
         }
     }
 }

@@ -39,7 +39,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Login" />
-        <activity android:name=".Register"></activity>
+        <activity android:name=".Register" />
+        <activity android:name=".FootPrint"></activity>
     </application>
 
 </manifest>
