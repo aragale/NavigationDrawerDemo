@@ -26,22 +26,6 @@ public class Login extends AppCompatActivity {
     private Button login_cancle_btn;
     private EditText usernameEtxt;
     private EditText passwdEtxt;
-    View.OnClickListener m_login_listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.login_btn_login:
-                    signIn();
-                    break;
-                case R.id.login_btn_register:
-                    Intent intent = new Intent(Login.this, Register.class);
-                    startActivity(intent);
-                    break;
-                case R.id.login_btn_cancle:
-                    break;
-            }
-        }
-    };
     private CheckBox rememberpw;
 
     @Override
@@ -59,8 +43,21 @@ public class Login extends AppCompatActivity {
         loginbtn.setOnClickListener(m_login_listener);
         registebtn.setOnClickListener(m_login_listener);
         login_cancle_btn.setOnClickListener(m_login_listener);
-
     }
+
+    View.OnClickListener m_login_listener = v -> {
+            switch (v.getId()) {
+                case R.id.login_btn_login:
+                    signIn();
+                    break;
+                case R.id.login_btn_register:
+                    Intent intent = new Intent(Login.this, Register.class);
+                    startActivity(intent);
+                    break;
+                case R.id.login_btn_cancle:
+                    break;
+            }
+    };
 
     public void signIn() {
         final SignInRequest signInRequest = SignInRequest.builder()

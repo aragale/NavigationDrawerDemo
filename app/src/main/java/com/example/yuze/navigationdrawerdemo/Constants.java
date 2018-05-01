@@ -9,4 +9,6 @@ public class Constants {
     public static final String USERS = "/api/users";
 
     public static final String SESSIONS = "/api/sessions";
+
+    public static final String TRACES = "/api/traces";
 }
