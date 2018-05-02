@@ -1,11 +1,8 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.Manifest;
-import android.app.Application;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -17,9 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
-import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.TextureMapView;
 import com.mindorks.placeholderview.PlaceHolderView;
@@ -34,7 +29,6 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
 
-    LocationClient locationClient;
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
@@ -42,28 +36,23 @@ public class MainActivity extends AppCompatActivity {
 
     private TextureMapView mMapView;
     private BaiduMap mBaiduMap;
-
-    //Application myApplication = new MyApplication();
+    LocationClient locationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
         mMapView = findViewById(R.id.mTexturemap);
-
+        initMap();
+        ((MyApplication) getApplication()).initLocation();
         mDrawer = findViewById(R.id.drawerLayout);
         mDrawerView = findViewById(R.id.drawerView);
         mToolbar = findViewById(R.id.toolbar);
         mGalleryView = findViewById(R.id.galleryView);
         setupDrawer();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
-            initMap();
-        } else {
-            MainActivityPermissionsDispatcher.ApplySuccessWithPermissionCheck(this);
-        }
+        MainActivityPermissionsDispatcher.ApplySuccessWithPermissionCheck(this);
     }
 
     /**
@@ -97,14 +86,15 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 地图初始化
      */
-    public void initMap(){
+    public void initMap() {
         mBaiduMap = mMapView.getMap();
-        ((MyApplication)getApplication()).mBaiduMap = mBaiduMap;
-        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);//设置地图类型为普通图
-        mMapView.showZoomControls(false);//关闭缩放按钮
-
-        mBaiduMap.setMyLocationEnabled(true);// 开启定位图层
-        ((MyApplication)getApplication()).initLocation();
+        ((MyApplication) getApplication()).mBaiduMap = mBaiduMap;
+        //设置地图类型为普通图
+        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+        //关闭缩放按钮
+        mMapView.showZoomControls(false);
+        // 开启定位图层
+        mBaiduMap.setMyLocationEnabled(true);
     }
 
 
@@ -114,16 +104,17 @@ public class MainActivity extends AppCompatActivity {
         // NOTE: delegate the permission handling to generated method
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
+
     /**
      * 申请权限成功时
      */
     @NeedsPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     void ApplySuccess() {
-        initMap();
     }
 
     /**
      * 申请权限告诉用户原因时
+     *
      * @param request
      */
     @OnShowRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -133,11 +124,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 申请权限被拒绝时
-     *
      */
     @OnPermissionDenied(Manifest.permission.ACCESS_COARSE_LOCATION)
     void onMapDenied() {
-        Toast.makeText(this,"你拒绝了权限，该功能不可用",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "你拒绝了权限，该功能不可用", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -150,23 +140,16 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 告知用户具体需要权限的原因
+     *
      * @param messageResId
      * @param request
      */
     private void showRationaleDialog(String messageResId, final PermissionRequest request) {
         new AlertDialog.Builder(this)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull DialogInterface dialog, int which) {
-                        request.proceed();//请求权限
-                    }
+                .setPositiveButton("确定", (dialog, which) -> {
+                    request.proceed();//请求权限
                 })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull DialogInterface dialog, int which) {
-                        request.cancel();
-                    }
-                })
+                .setNegativeButton("取消", (dialog, which) -> request.cancel())
                 .setCancelable(false)
                 .setMessage(messageResId)
                 .show();
@@ -178,19 +161,13 @@ public class MainActivity extends AppCompatActivity {
     private void AskForPermission() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("当前应用缺少定位权限,请去设置界面打开\n打开之后按两次返回键可回到该应用哦");
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                return;
-            }
+        builder.setNegativeButton("取消", (dialog, which) -> {
+            return;
         });
-        builder.setPositiveButton("设置", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.parse("package:" + MainActivity.this.getPackageName())); // 根据包名打开对应的设置界面
-                startActivity(intent);
-            }
+        builder.setPositiveButton("设置", (dialog, which) -> {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + MainActivity.this.getPackageName())); // 根据包名打开对应的设置界面
+            startActivity(intent);
         });
         builder.create().show();
     }
@@ -208,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        //initMap();
+        //((MyApplication) getApplication()).initLocation();
     }
 
     @Override

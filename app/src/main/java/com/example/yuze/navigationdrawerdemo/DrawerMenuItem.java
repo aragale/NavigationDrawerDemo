@@ -60,15 +60,19 @@ public class DrawerMenuItem {
 
     @Click(R.id.mainView)
     public void onMenuItemClick() {
+        Intent intent = new Intent();
         switch (mMenuPosition) {
             case DRAWER_MENU_ITEM_LOGIN:
-                Intent intent = new Intent(mContext, Login.class);
+                intent.setClass(mContext,Login.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);
                 Toast.makeText(mContext, "Profile", Toast.LENGTH_SHORT).show();
                 if (mCallBack != null) mCallBack.onLoginMenuSelected();
                 break;
             case DRAWER_MENU_ITEM_FOOTPRINTS:
+                intent.setClass(mContext,FootPrint.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
                 Toast.makeText(mContext, "Requests", Toast.LENGTH_SHORT).show();
                 if (mCallBack != null) mCallBack.onFootprintsMenuSelected();
                 break;

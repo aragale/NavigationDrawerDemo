@@ -43,6 +43,8 @@
         <activity android:name=".Login" />
         <activity android:name=".Register" />
         <activity android:name=".FootPrint"></activity>
+
+        <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote"> </service>
     </application>
 
 </manifest>

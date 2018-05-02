@@ -39,7 +39,8 @@ public class JsonUtils {
         try {
             return OBJECT_MAPPER.readValue(json, clazz);
         } catch (IOException e) {
-            Log.d(JsonUtils.class.getName(), "Json read", e);
+            //Log.d(JsonUtils.class.getName(), "Json read", e);
+            e.printStackTrace();
             return null;
         }
     }

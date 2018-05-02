@@ -13,14 +13,10 @@ import android.widget.Toast;
 
 import com.example.yuze.navigationdrawerdemo.dto.SignInRequest;
 import com.example.yuze.navigationdrawerdemo.dto.SignInResponse;
-import com.example.yuze.navigationdrawerdemo.dto.SignUpResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Login extends AppCompatActivity {
-
-    final ObjectMapper objectMapper = new ObjectMapper();
     private Button loginbtn;
     private Button registebtn;
     private Button login_cancle_btn;

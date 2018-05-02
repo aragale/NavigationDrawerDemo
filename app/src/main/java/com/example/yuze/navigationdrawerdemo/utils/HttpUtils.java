@@ -2,6 +2,8 @@ package com.example.yuze.navigationdrawerdemo.utils;
 
 import android.util.Log;
 
+import com.example.yuze.navigationdrawerdemo.State;
+
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -26,6 +28,22 @@ public class HttpUtils {
     public static String post(String url, String json) {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            Log.e("HttpUtils", "POST Exception", e);
+            return null;
+        }
+    }
+
+    public static String post_with_session(String url, String json) {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .header("session", State.INSTANCE.sessionId)
                 .url(url)
                 .post(body)
                 .build();

@@ -1,6 +1,6 @@
 package com.example.yuze.navigationdrawerdemo.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class LocationPointsResponse {
 
-    @JsonProperty("id")
-    private String positionId;
+    private String id;
+
+    private List<LocationPoint> positions;
 }
