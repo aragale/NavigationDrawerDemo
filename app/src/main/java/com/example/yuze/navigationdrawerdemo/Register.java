@@ -23,18 +23,6 @@ public class Register extends AppCompatActivity {
     private EditText usernameEtxt;   //用户名编辑
     private EditText passwdEtxt;       //密码编辑
     private EditText pwdcheckEtxt;  //密码编辑
-    final View.OnClickListener m_register_Listener = v -> {
-        switch (v.getId()) {
-            case R.id.register_btn_sure:
-                register_check();
-                break;
-            case R.id.register_btn_cancel:
-                Intent intent_Register_to_Login = new Intent(Register.this, Login.class);
-                startActivity(intent_Register_to_Login);
-                finish();
-                break;
-        }
-    };
     private Button mSureButton;  //确定按钮
     private Button mCancelButton;//取消按钮
 
@@ -54,6 +42,18 @@ public class Register extends AppCompatActivity {
         mSureButton.setOnClickListener(m_register_Listener);
         mCancelButton.setOnClickListener(m_register_Listener);
     }
+    final View.OnClickListener m_register_Listener = v -> {
+        switch (v.getId()) {
+            case R.id.register_btn_sure:
+                register_check();
+                break;
+            case R.id.register_btn_cancel:
+                Intent intent_Register_to_Login = new Intent(Register.this, Login.class);
+                startActivity(intent_Register_to_Login);
+                finish();
+                break;
+        }
+    };
 
     public void register_check() {
         if (usernameEtxt.getText() == null) {
