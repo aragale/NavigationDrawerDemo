@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
-    private PlaceHolderView mGalleryView;
 
     private TextureMapView mMapView;
     private BaiduMap mBaiduMap;
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawer = findViewById(R.id.drawerLayout);
         mDrawerView = findViewById(R.id.drawerView);
         mToolbar = findViewById(R.id.toolbar);
-        mGalleryView = findViewById(R.id.galleryView);
+//        PlaceHolderView mGalleryView = findViewById(R.id.galleryView);
         setupDrawer();
 
         MainActivityPermissionsDispatcher.ApplySuccessWithPermissionCheck(this);

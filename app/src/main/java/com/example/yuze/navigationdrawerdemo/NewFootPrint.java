@@ -17,19 +17,16 @@ import java.util.List;
 
 public class NewFootPrint extends AppCompatActivity {
 
-    private Button startbtn;
-    private Button stopbtn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_foot_print);
 
-        startbtn = findViewById(R.id.start_trace);
-        stopbtn = findViewById(R.id.end_trace);
+        Button startBtn = findViewById(R.id.start_trace);
+        Button stopBtn = findViewById(R.id.end_trace);
 
-        startbtn.setOnClickListener(m_PositionPoints_listener);
-        stopbtn.setOnClickListener(m_PositionPoints_listener);
+        startBtn.setOnClickListener(m_PositionPoints_listener);
+        stopBtn.setOnClickListener(m_PositionPoints_listener);
     }
 
     View.OnClickListener m_PositionPoints_listener = v -> {
