@@ -17,28 +17,24 @@ import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
 public class Login extends AppCompatActivity {
-    private Button loginbtn;
-    private Button registebtn;
-    private Button login_cancle_btn;
     private EditText usernameEtxt;
     private EditText passwdEtxt;
-    private CheckBox rememberpw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        loginbtn = findViewById(R.id.login_btn_login);
-        registebtn = findViewById(R.id.login_btn_register);
-        login_cancle_btn = findViewById(R.id.login_btn_cancle);
+        Button loginBtn = findViewById(R.id.login_btn_login);
+        Button registerBtn = findViewById(R.id.login_btn_register);
+        Button loginOutBtn = findViewById(R.id.login_btn_cancle);
         usernameEtxt = findViewById(R.id.login_edit_account);
         passwdEtxt = findViewById(R.id.login_edit_pwd);
-        rememberpw = findViewById(R.id.login_remember);
+        CheckBox rememberPassword = findViewById(R.id.login_remember);
 
-        loginbtn.setOnClickListener(m_login_listener);
-        registebtn.setOnClickListener(m_login_listener);
-        login_cancle_btn.setOnClickListener(m_login_listener);
+        loginBtn.setOnClickListener(m_login_listener);
+        registerBtn.setOnClickListener(m_login_listener);
+        loginOutBtn.setOnClickListener(m_login_listener);
     }
 
     View.OnClickListener m_login_listener = v -> {

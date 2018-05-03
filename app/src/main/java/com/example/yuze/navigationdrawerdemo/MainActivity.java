@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.baidu.location.LocationClient;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.TextureMapView;
+import com.example.yuze.navigationdrawerdemo.layout.DrawerHeader;
+import com.example.yuze.navigationdrawerdemo.layout.DrawerMenuItem;
 import com.mindorks.placeholderview.PlaceHolderView;
 
 import permissions.dispatcher.NeedsPermission;
