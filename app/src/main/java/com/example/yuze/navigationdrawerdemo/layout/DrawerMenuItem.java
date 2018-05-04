@@ -99,8 +99,8 @@ public class DrawerMenuItem {
                 break;
             case DRAWER_MENU_ITEM_CLOUD:
                 if (State.INSTANCE.sessionId != null) {
-                Toast.makeText(mContext, "Notifications", Toast.LENGTH_SHORT).show();
-                if (mCallBack != null) mCallBack.onCloudMenuSelected();
+                    Toast.makeText(mContext, "Notifications", Toast.LENGTH_SHORT).show();
+                    if (mCallBack != null) mCallBack.onCloudMenuSelected();
                 } else {
                     Toast.makeText(mContext, "请先登录", Toast.LENGTH_SHORT).show();
                     intent.setClass(mContext, Login.class);

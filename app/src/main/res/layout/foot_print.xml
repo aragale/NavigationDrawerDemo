@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -23,18 +22,17 @@
 
     <include
         android:id="@+id/bottomBar"
+        layout="@layout/bottom_menu"
         android:layout_width="fill_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        layout="@layout/bottom_menu">
-    </include>
+        android:layout_alignParentBottom="true"></include>
 
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/title"
-        android:layout_above="@id/bottomBar">
+        android:layout_above="@id/bottomBar"
+        android:layout_below="@id/title">
 
     </FrameLayout>
 

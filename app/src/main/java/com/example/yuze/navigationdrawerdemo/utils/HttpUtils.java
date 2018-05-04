@@ -56,17 +56,17 @@ public class HttpUtils {
         }
     }
 
-    public static String get(String url,String session){
+    public static String get(String url, String session) {
         Request request = new Request.Builder()
                 .url(url)
                 .get()
-                .addHeader("session",session)
+                .addHeader("session", session)
                 .build();
         try {
             Response response = client.newCall(request).execute();
             return response.body().string();
         } catch (IOException e) {
-            Log.e("HttpUtil","GET Exception",e);
+            Log.e("HttpUtil", "GET Exception", e);
             return null;
         }
     }

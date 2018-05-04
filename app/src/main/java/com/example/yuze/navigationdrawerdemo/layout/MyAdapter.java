@@ -8,9 +8,10 @@ import java.util.ArrayList;
 
 public class MyAdapter extends FragmentPagerAdapter {
     ArrayList<Fragment> mFragments;
-    public MyAdapter(FragmentManager fm , ArrayList<Fragment> fragments) {
+
+    public MyAdapter(FragmentManager fm, ArrayList<Fragment> fragments) {
         super(fm);
-        mFragments=fragments;
+        mFragments = fragments;
     }
 
     @Override

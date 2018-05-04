@@ -41,8 +41,8 @@ public class MyImageView extends AppCompatImageView {
     public final void setImages(int normal, int selected) {
         this.mNormalIcon = createBitmap(normal);                            // 拿到原图
         this.mSelectedIcon = createBitmap(selected);
-        int width = (int)getResources().getDimension(R.dimen.tab_image_weith);
-        int heigh = (int)getResources().getDimension(R.dimen.tab_image_heigh);
+        int width = (int) getResources().getDimension(R.dimen.tab_image_weith);
+        int heigh = (int) getResources().getDimension(R.dimen.tab_image_heigh);
         this.mNormalRect = new Rect(0, 0, width, heigh);                   //拿到画板的大小
         this.mSelectedRect = new Rect(0, 0, width, heigh);
         this.mPaint = new Paint();                                         // 拿到画笔
@@ -71,6 +71,7 @@ public class MyImageView extends AppCompatImageView {
 
     /**
      * 当滑动的时候来调用此方法
+     *
      * @param offset
      */
     public final void transformPage(float offset) {

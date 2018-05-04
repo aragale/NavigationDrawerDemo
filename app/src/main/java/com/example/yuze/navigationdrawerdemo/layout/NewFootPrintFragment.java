@@ -3,7 +3,6 @@ package com.example.yuze.navigationdrawerdemo.layout;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +21,7 @@ import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class NewFootPrintFragment extends Fragment implements View.OnClickListener{
+public class NewFootPrintFragment extends Fragment implements View.OnClickListener {
 
 //    private boolean running;//是否运行
 //    private boolean wasRunning;//暂停前是否运行
@@ -100,15 +99,15 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
 //    }
 
     @Override
-    public void onClick(View view){
-        switch (view.getId()){
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.start_trace:
                 startTrace();
-                Toast.makeText(getContext(),"开始记录",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "开始记录", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.end_trace:
                 endTrace();
-                Toast.makeText(getContext(),"记录结束",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "记录结束", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
