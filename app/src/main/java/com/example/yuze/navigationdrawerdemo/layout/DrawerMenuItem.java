@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.example.yuze.navigationdrawerdemo.FootPrint;
 import com.example.yuze.navigationdrawerdemo.Login;
 import com.example.yuze.navigationdrawerdemo.R;
+import com.example.yuze.navigationdrawerdemo.State;
 import com.mindorks.placeholderview.annotations.Click;
 import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.Resolve;
@@ -66,26 +67,46 @@ public class DrawerMenuItem {
         Intent intent = new Intent();
         switch (mMenuPosition) {
             case DRAWER_MENU_ITEM_LOGIN:
-                intent.setClass(mContext,Login.class);
+                intent.setClass(mContext, Login.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);
-                Toast.makeText(mContext, "Profile", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "正在跳转...", Toast.LENGTH_SHORT).show();
                 if (mCallBack != null) mCallBack.onLoginMenuSelected();
                 break;
             case DRAWER_MENU_ITEM_FOOTPRINTS:
-                intent.setClass(mContext,FootPrint.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-                Toast.makeText(mContext, "Requests", Toast.LENGTH_SHORT).show();
-                if (mCallBack != null) mCallBack.onFootprintsMenuSelected();
+                if (State.INSTANCE.sessionId != null) {
+                    intent.setClass(mContext, FootPrint.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    if (mCallBack != null) mCallBack.onFootprintsMenuSelected();
+                } else {
+                    Toast.makeText(mContext, "请先登录", Toast.LENGTH_SHORT).show();
+                    intent.setClass(mContext, Login.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                }
                 break;
             case DRAWER_MENU_ITEM_SHARE:
-                Toast.makeText(mContext, "Messages", Toast.LENGTH_SHORT).show();
-                if (mCallBack != null) mCallBack.onShareMenuSelected();
+                if (State.INSTANCE.sessionId != null) {
+                    Toast.makeText(mContext, "Messages", Toast.LENGTH_SHORT).show();
+                    if (mCallBack != null) mCallBack.onShareMenuSelected();
+                } else {
+                    Toast.makeText(mContext, "请先登录", Toast.LENGTH_SHORT).show();
+                    intent.setClass(mContext, Login.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                }
                 break;
             case DRAWER_MENU_ITEM_CLOUD:
+                if (State.INSTANCE.sessionId != null) {
                 Toast.makeText(mContext, "Notifications", Toast.LENGTH_SHORT).show();
                 if (mCallBack != null) mCallBack.onCloudMenuSelected();
+                } else {
+                    Toast.makeText(mContext, "请先登录", Toast.LENGTH_SHORT).show();
+                    intent.setClass(mContext, Login.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                }
                 break;
             case DRAWER_MENU_ITEM_SETTINGS:
                 Toast.makeText(mContext, "Settings", Toast.LENGTH_SHORT).show();

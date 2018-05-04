@@ -49,7 +49,6 @@
             android:enabled="true"
             android:process=":remote"></service>
 
-        <activity android:name=".NewFootPrint"></activity>
     </application>
 
 </manifest>

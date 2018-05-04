@@ -17,8 +17,8 @@ import com.baidu.mapapi.model.LatLng;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 
 public class MyApplication extends Application {
@@ -49,7 +49,10 @@ public class MyApplication extends Application {
      */
     private volatile double longitude = 0.0;
 
-    public final List<LocationPoint> locationPoints = new ArrayList<>();
+    /**
+     * 定位点队列
+     */
+    public final ConcurrentLinkedDeque<LocationPoint> locationPoints = new ConcurrentLinkedDeque<>();
 
     @Override
     public void onCreate() {
@@ -58,7 +61,7 @@ public class MyApplication extends Application {
         SDKInitializer.initialize(getApplicationContext());
         //请求定位线程
         requestLocationThread = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()){
+            while (!Thread.currentThread().isInterrupted()) {
                 if (isRequestLocation) {
                     //开始定位
                     int requestLocation = mLocationClient.requestLocation();
@@ -84,7 +87,7 @@ public class MyApplication extends Application {
         //设置定位模式，高精度，低功耗，仅设备
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
         //设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        option.setScanSpan(3000);
+        //option.setScanSpan(3000);
         //可选，默认false,设置是否使用gps
         option.setOpenGps(true);
         option.setIsNeedAddress(true);
@@ -108,19 +111,20 @@ public class MyApplication extends Application {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             String time = location.getTime();
-            Toast.makeText(getApplicationContext(), String.format("lat:%f, lon:%f, t:%s", latitude, longitude, time), Toast.LENGTH_SHORT).show();
 
             //设置marker半径
             location.setRadius(100);
-
             Log.i("onReceiveLocation", String.format("latitude:%f, longitude:%f", latitude, longitude));
 
-            //将经纬度添加到列表
-            locationPoints.add(LocationPoint.builder()
-                    .latitude(location.getLatitude())
-                    .longitude(location.getLongitude())
-                    .time(location.getTime())
-                    .build());
+            if (isRequestLocation && (locationPoints.isEmpty() || checkLocationPoint(location))) {
+                Toast.makeText(getApplicationContext(), String.format("lat:%f, lon:%f, t:%s", latitude, longitude, time), Toast.LENGTH_SHORT).show();
+                //将经纬度添加到列表
+                locationPoints.add(LocationPoint.builder()
+                        .latitude(location.getLatitude())
+                        .longitude(location.getLongitude())
+                        .time(location.getTime())
+                        .build());
+            }
 
             //这个判断是为了防止每次定位都重新设置中心点和marker
             if (isFirstLocation) {
@@ -129,6 +133,27 @@ public class MyApplication extends Application {
             //设置并显示中心点
             setPosition2Center(mBaiduMap, location, true);
         }
+    }
+
+    /**
+     * 检查制定的定位是否符合要求
+     *
+     * @param location 指定的com.baidu.location.BDLocation实例
+     * @return 若符合要求，返回true，否则返回false
+     */
+    private boolean checkLocationPoint(final BDLocation location) {
+        //队尾
+        final LocationPoint last = locationPoints.peekLast();
+        //定位实例的时间转换为LocalDateTime
+        final LocalDateTime locationTime =
+                LocalDateTime.parse(location.getTime(), Constants.BAIDU_LOCATION_TIME_FORMATTER);
+        final LocalDateTime lastTime =
+                LocalDateTime.parse(last.getTime(), Constants.BAIDU_LOCATION_TIME_FORMATTER);
+        //位置是否相同
+        boolean sameLocation = location.getLongitude() == last.getLongitude() && location.getLatitude() == last.getLatitude();
+        //时间大于30秒
+        boolean elapsedGET30Seconds = lastTime.until(locationTime, ChronoUnit.SECONDS) >= 30L;
+        return !sameLocation && elapsedGET30Seconds;
     }
 
     /**

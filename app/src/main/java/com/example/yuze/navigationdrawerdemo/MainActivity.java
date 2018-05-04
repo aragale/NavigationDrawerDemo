@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
 
     private TextureMapView mMapView;
-    private BaiduMap mBaiduMap;
+    private BaiduMap mBaiDuMap;
     LocationClient locationClient;
 
     @Override
@@ -88,14 +88,14 @@ public class MainActivity extends AppCompatActivity {
      * 地图初始化
      */
     public void initMap() {
-        mBaiduMap = mMapView.getMap();
-        ((MyApplication) getApplication()).mBaiduMap = mBaiduMap;
+        mBaiDuMap = mMapView.getMap();
+        ((MyApplication) getApplication()).mBaiduMap = mBaiDuMap;
         //设置地图类型为普通图
-        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+        mBaiDuMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         //关闭缩放按钮
         mMapView.showZoomControls(false);
         // 开启定位图层
-        mBaiduMap.setMyLocationEnabled(true);
+        mBaiDuMap.setMyLocationEnabled(true);
     }
 
 
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         locationClient.stop();//退出时销毁定位
         mMapView.onDestroy();
-        mBaiduMap.setMyLocationEnabled(false);//关闭定位图层
+        mBaiDuMap.setMyLocationEnabled(false);//关闭定位图层
         mMapView = null;
     }
 
