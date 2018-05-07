@@ -47,7 +47,8 @@ public class Login extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.login_btn_cancle:
-
+                    new SignOutTask().execute();
+                    State.INSTANCE.sessionId = null;
                     break;
             }
     };
@@ -59,6 +60,14 @@ public class Login extends AppCompatActivity {
                 .build();
         final String signInRequestJson = JsonUtils.write(signInRequest);
         new LoginTask().execute(signInRequestJson);
+    }
+
+    private class SignOutTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            HttpUtils.delete(Constants.HOST + Constants.SESSIONS + "/" + State.INSTANCE.sessionId);
+            return null;
+        }
     }
 
     private class LoginTask extends AsyncTask<String, Void, String> {
