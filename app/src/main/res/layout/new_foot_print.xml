@@ -1,29 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
-    android:orientation="vertical">
+    android:paddingLeft="10dp"
+    android:layout_marginTop="5dp"
+    android:paddingRight="10dp">
 
-    <Button
-        android:id="@+id/start_trace"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="开始记录" />
+    <com.baidu.mapapi.map.TextureMapView
+        android:id="@+id/mMap"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"></com.baidu.mapapi.map.TextureMapView>
 
-    <Button
-        android:id="@+id/end_trace"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="结束记录" />
+    <LinearLayout
+        android:id="@+id/new_bottom_menu"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/mMap">
 
-    <Button
-        android:id="@+id/trace_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="编辑" />
+        <Button
+            android:id="@+id/start_trace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35dp"
+            android:text="开始记录"
+            android:background="@color/lightSteelBlue" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/end_trace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="结束记录"
+            android:background="@color/lightSteelBlue" />
+
+        <Button
+            android:id="@+id/trace_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="编辑"
+            android:background="@color/lightSteelBlue" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MyApplication extends Application {
 
-    public BaiduMap mBaiduMap = null;
+    public BaiduMap mBaiDuMap = null;
 
     /**
      * 请求定位线程
@@ -34,10 +34,9 @@ public class MyApplication extends Application {
      * 是否需要请求定位
      */
     public volatile boolean isRequestLocation = false;
-
     private LocationClient mLocationClient = null;
-    private volatile boolean isFirstLocation = true;//防止每次定位都重新设置中心点和marker
-    private BDAbstractLocationListener mListener = new MyLocationListener();
+    private volatile boolean isFirstLocation = true;//是否首次定位 防止每次定位都重新设置中心点和marker
+    private MyLocationListener mListener = new MyLocationListener();
 
     /**
      * 最近一次的纬度
@@ -57,8 +56,10 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         //初始化百度地图
         SDKInitializer.initialize(getApplicationContext());
+
         //请求定位线程
         requestLocationThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -87,7 +88,7 @@ public class MyApplication extends Application {
         //设置定位模式，高精度，低功耗，仅设备
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
         //设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        //option.setScanSpan(3000);
+        option.setScanSpan(3000);
         //可选，默认false,设置是否使用gps
         option.setOpenGps(true);
         option.setIsNeedAddress(true);
@@ -95,6 +96,11 @@ public class MyApplication extends Application {
         option.setLocationNotify(true);
         //设置是否在stop的时候杀死这个进程，默认不杀死
         option.setIgnoreKillProcess(false);
+
+        // 设置定位方式的优先级。
+        // 当gps可用，而且获取了定位结果时，不再发起网络请求，直接返回给用户坐标。这个选项适合希望得到准确坐标位置的用户。如果gps不可用，再发起网络请求，进行定位。
+        option.setPriority(LocationClientOption.GpsFirst);
+
         mLocationClient.setLocOption(option);
         mLocationClient.start();
     }
@@ -114,6 +120,7 @@ public class MyApplication extends Application {
 
             //设置marker半径
             location.setRadius(100);
+
             Log.i("onReceiveLocation", String.format("latitude:%f, longitude:%f", latitude, longitude));
 
             if (isRequestLocation && (locationPoints.isEmpty() || checkLocationPoint(location))) {
@@ -131,7 +138,26 @@ public class MyApplication extends Application {
                 isFirstLocation = false;
             }
             //设置并显示中心点
-            setPosition2Center(mBaiduMap, location, true);
+            setPosition2Center(mBaiDuMap, location, true);
+        }
+    }
+
+    /**
+     * 设置中心点和添加marker
+     */
+    public void setPosition2Center(BaiduMap map, BDLocation bdLocation, Boolean isShowLoc) {
+        MyLocationData locData = new MyLocationData.Builder()
+                .accuracy(bdLocation.getRadius())
+                .direction(bdLocation.getRadius()).latitude(bdLocation.getLatitude())
+                .longitude(bdLocation.getLongitude())
+                .build();
+        map.setMyLocationData(locData);
+
+        if (isShowLoc) {
+            LatLng ll = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
+            MapStatus.Builder builder = new MapStatus.Builder();
+            builder.target(ll).zoom(18.0f);
+            map.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
         }
     }
 
@@ -154,24 +180,5 @@ public class MyApplication extends Application {
         //时间大于30秒
         boolean elapsedGET30Seconds = lastTime.until(locationTime, ChronoUnit.SECONDS) >= 30L;
         return !sameLocation && elapsedGET30Seconds;
-    }
-
-    /**
-     * 设置中心点和添加marker
-     */
-    public void setPosition2Center(BaiduMap map, BDLocation bdLocation, Boolean isShowLoc) {
-        MyLocationData locData = new MyLocationData.Builder()
-                .accuracy(bdLocation.getRadius())
-                .direction(bdLocation.getRadius()).latitude(bdLocation.getLatitude())
-                .longitude(bdLocation.getLongitude())
-                .build();
-        map.setMyLocationData(locData);
-
-        if (isShowLoc) {
-            LatLng ll = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
-            MapStatus.Builder builder = new MapStatus.Builder();
-            builder.target(ll).zoom(18.0f);
-            map.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-        }
     }
 }

@@ -47,6 +47,7 @@ public class Login extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.login_btn_cancle:
+
                     break;
             }
     };

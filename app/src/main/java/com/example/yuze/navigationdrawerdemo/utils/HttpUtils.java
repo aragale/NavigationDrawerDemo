@@ -70,4 +70,18 @@ public class HttpUtils {
             return null;
         }
     }
+
+    public static String delete(String url, String session) {
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("session", session)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            Log.e("HttpUtil", "GET Exception", e);
+            return null;
+        }
+    }
 }

@@ -44,13 +44,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMapView = findViewById(R.id.mTexturemap);
+        mMapView = findViewById(R.id.mTextureMap);
         initMap();
         ((MyApplication) getApplication()).initLocation();
         mDrawer = findViewById(R.id.drawerLayout);
         mDrawerView = findViewById(R.id.drawerView);
         mToolbar = findViewById(R.id.toolbar);
-//        PlaceHolderView mGalleryView = findViewById(R.id.galleryView);
         setupDrawer();
 
         MainActivityPermissionsDispatcher.ApplySuccessWithPermissionCheck(this);
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void initMap() {
         mBaiDuMap = mMapView.getMap();
-        ((MyApplication) getApplication()).mBaiduMap = mBaiDuMap;
+        ((MyApplication) getApplication()).mBaiDuMap = mBaiDuMap;
         //设置地图类型为普通图
         mBaiDuMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         //关闭缩放按钮
