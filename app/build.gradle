@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.yuze.navigationdrawerdemo"
         minSdkVersion 26
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -32,7 +32,6 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.0'
-//    implementation 'com.android.support:design:26.2.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.mindorks.android:placeholderview:1.0.3'
     annotationProcessor 'com.mindorks.android:placeholderview-compiler:1.0.3'
@@ -54,5 +53,5 @@ dependencies {
         exclude module :'support-v13'
     }
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:3.2.0"
-
+    implementation 'com.android.support:design:27.1.0'
 }

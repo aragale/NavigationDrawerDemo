@@ -71,17 +71,16 @@ public class HttpUtils {
         }
     }
 
-    public static String delete(String url, String session) {
+    public static void delete(String url) {
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("session", session)
+                .delete()
                 .build();
         try {
-            Response response = client.newCall(request).execute();
-            return response.body().string();
+            client.newCall(request).execute();
         } catch (IOException e) {
-            Log.e("HttpUtil", "GET Exception", e);
-            return null;
+            e.printStackTrace();
         }
+
     }
 }

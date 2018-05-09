@@ -1,15 +1,19 @@
 package com.example.yuze.navigationdrawerdemo.layout;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
@@ -39,8 +43,13 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
 
     private Button startBtn;
     private Button stopBtn;
-    private Button editBtn;
     private LocationPoint lastLocationPoint = null;
+
+    private FloatingActionButton mFab;
+    private FloatingActionButton photoButton;
+    private FloatingActionButton desButton;
+    private LinearLayout photoLayout;
+    private LinearLayout editLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,16 +63,44 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
 
         startBtn = layout.findViewById(R.id.start_trace);
         stopBtn = layout.findViewById(R.id.end_trace);
-        editBtn = layout.findViewById(R.id.trace_edit);
+
+        mFab = layout.findViewById(R.id.editLayout);
+        photoButton = layout.findViewById(R.id.photoButton);
+        desButton = layout.findViewById(R.id.desButton);
+        photoLayout = layout.findViewById(R.id.photo);
+        editLayout = layout.findViewById(R.id.edit);
+        photoLayout.setVisibility(View.GONE);
+        editLayout.setVisibility(View.GONE);
 
         mMapView = layout.findViewById(R.id.mMap);
         mBaiDuMap = mMapView.getMap();
+        //k开启定位图层
         mBaiDuMap.setMyLocationEnabled(true);
+        //关闭缩放按钮
+        mMapView.showZoomControls(false);
         ((MyApplication) getActivity().getApplication()).mBaiDuMap = mBaiDuMap;
 
         startBtn.setOnClickListener(this);
         stopBtn.setOnClickListener(this);
-        editBtn.setOnClickListener(this);
+
+        mFab.setOnClickListener(v -> {
+            if (photoLayout.getVisibility() == View.VISIBLE && editLayout.getVisibility() == View.VISIBLE) {
+                photoLayout.setVisibility(View.GONE);
+                editLayout.setVisibility(View.GONE);
+            } else {
+                photoLayout.setVisibility(View.VISIBLE);
+                editLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        photoButton.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        });
+
+        desButton.setOnClickListener(v -> {
+
+        });
+
         return layout;
     }
 
@@ -80,7 +117,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                 startBtn.setBackgroundColor(Color.rgb(176, 196, 222));
                 Toast.makeText(getContext(), "记录结束", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.trace_edit:
+            case R.id.editLayout:
                 break;
         }
     }
@@ -162,4 +199,6 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                     strings[0]);
         }
     }
+
 }
+
