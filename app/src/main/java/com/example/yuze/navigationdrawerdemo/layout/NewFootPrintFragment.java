@@ -1,8 +1,13 @@
 package com.example.yuze.navigationdrawerdemo.layout;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -13,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -50,6 +57,8 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
     private FloatingActionButton desButton;
     private LinearLayout photoLayout;
     private LinearLayout editLayout;
+
+    private ImageView imgShow;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,11 +103,12 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         });
 
         photoButton.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            openAlbum();
+            onActivityResult(0, 0, getActivity().getIntent());
         });
 
         desButton.setOnClickListener(v -> {
-
+            dialog();
         });
 
         return layout;
@@ -116,8 +126,6 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                 endTrace();
                 startBtn.setBackgroundColor(Color.rgb(176, 196, 222));
                 Toast.makeText(getContext(), "记录结束", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.editLayout:
                 break;
         }
     }
@@ -200,5 +208,50 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         }
     }
 
+    /**
+     * 打开系统相册
+     */
+    public void openAlbum() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0 && resultCode == 0) {
+            if (data != null) {
+                try {
+                    //获得图片的uri
+                    Uri uri = data.getData();
+                    //获取图片的路径
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    //从系统表中查询指定Uri对应的照片
+                    Cursor cursor = getActivity().getContentResolver().query(uri, filePathColumn, null, null, null);
+                    //获得用户选择的图片的索引值
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    //将光标移至开头 ，避免越界
+                    cursor.moveToFirst();
+                    //最后根据索引值获取图片路径
+                    String path = cursor.getString(column_index);
+                    cursor.close();
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    imgShow.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    protected void dialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("添加足迹描述：")
+                .setView(new EditText(getContext()))
+                .setPositiveButton("完成", null)
+                .setNegativeButton("取消", null)
+                .show();
+    }
 }
 
