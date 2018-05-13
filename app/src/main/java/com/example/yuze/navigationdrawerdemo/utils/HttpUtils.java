@@ -81,6 +81,20 @@ public class HttpUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public static String get_with_session(String url, String session) {
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("session", session)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

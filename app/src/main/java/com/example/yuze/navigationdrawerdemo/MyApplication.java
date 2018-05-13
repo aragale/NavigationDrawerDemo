@@ -4,6 +4,10 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.oss.ClientConfiguration;
+import com.alibaba.sdk.android.oss.OSSClient;
+import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
+import com.alibaba.sdk.android.oss.common.auth.OSSPlainTextAKSKCredentialProvider;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
@@ -53,6 +57,11 @@ public class MyApplication extends Application {
      */
     public final ConcurrentLinkedDeque<LocationPoint> locationPoints = new ConcurrentLinkedDeque<>();
 
+    /**
+     * OSS 客户端实例
+     */
+    public OSSClient ossClient = null;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -77,6 +86,20 @@ public class MyApplication extends Application {
         });
         requestLocationThread.setName("requestLocationThread");
         requestLocationThread.start();
+
+        //初始化OSS客户端实例
+        ClientConfiguration conf = new ClientConfiguration();
+        conf.setConnectionTimeout(15 * 1000); // connction time out default 15s
+        conf.setSocketTimeout(15 * 1000); // socket timeout，default 15s
+        conf.setMaxConcurrentRequest(5); // synchronous request number，default 5
+        conf.setMaxErrorRetry(2); // retry，default 2
+        //OSSLog.enableLog(); //write local log file ,path is SDCard_path\OSSLog\logs.csv
+        //insecure
+        OSSCredentialProvider credentialProvider = new OSSPlainTextAKSKCredentialProvider(
+                Constants.OSS_ACCESS_ID,
+                Constants.OSS_ACCESS_SECRET_KEY);
+
+        this.ossClient = new OSSClient(getApplicationContext(), Constants.OSS_END_POINT, credentialProvider, conf);
     }
 
     public void initLocation() {
