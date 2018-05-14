@@ -7,7 +7,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="所有足迹" />
+        android:text="所有足迹"
+        android:textSize="25dp"
+        android:layout_marginTop="5dp"
+        android:textColor="#000" />
 
     <ListView
         android:id="@+id/foot_print_list"
