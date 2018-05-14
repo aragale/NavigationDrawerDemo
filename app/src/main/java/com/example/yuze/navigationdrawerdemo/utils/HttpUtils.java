@@ -1,5 +1,7 @@
 package com.example.yuze.navigationdrawerdemo.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.yuze.navigationdrawerdemo.State;
@@ -67,6 +69,20 @@ public class HttpUtils {
             return response.body().string();
         } catch (IOException e) {
             Log.e("HttpUtil", "GET Exception", e);
+            return null;
+        }
+    }
+
+    public static Bitmap getBitmap(String url) {
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            return BitmapFactory.decodeStream(response.body().byteStream());
+        } catch (IOException e) {
+            Log.e("HttpUtil", "getBitmap", e);
             return null;
         }
     }
