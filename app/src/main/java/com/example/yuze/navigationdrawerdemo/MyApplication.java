@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -255,7 +256,9 @@ public class MyApplication extends Application {
             alertDialogBuilder.setTitle("您有一条新的足迹分享");
 //            alertDialogBuilder.setMessage();
             alertDialogBuilder.setPositiveButton("查看详情", (dialog, which) -> {
-
+                Intent intent = new Intent();
+                intent.setClass(this, GetFPActivity.class);
+                startActivity(intent);
             });
             alertDialogBuilder.setNegativeButton("忽略", (dialog, which) -> {
                 alertDialog.cancel();
