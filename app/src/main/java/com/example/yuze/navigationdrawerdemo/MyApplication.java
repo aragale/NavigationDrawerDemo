@@ -254,7 +254,7 @@ public class MyApplication extends Application {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialogBuilder.setTitle("您有一条新的足迹分享");
-//            alertDialogBuilder.setMessage();
+            alertDialogBuilder.setMessage(messageToUsernameAndFootId.toString());
             alertDialogBuilder.setPositiveButton("查看详情", (dialog, which) -> {
                 Intent intent = new Intent();
                 intent.setClass(this, GetFPActivity.class);
