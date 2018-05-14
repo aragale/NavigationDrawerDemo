@@ -16,6 +16,8 @@ public class Constants {
 
     public static final String FootPrints = "/api/foot-prints";
 
+    public static final String FootPrintsList = "/api/foot-print-lists";
+
     /**
      * 百度定位时间格式
      */

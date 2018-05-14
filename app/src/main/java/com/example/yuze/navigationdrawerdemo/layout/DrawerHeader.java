@@ -45,6 +45,7 @@ public class DrawerHeader {
                 Log.e("username", "get userName err");
             } else {
                 nameTxt.setText(userNameResponse.getUserName());
+                State.INSTANCE.userName = userNameResponse.getUserName();
             }
         }
 

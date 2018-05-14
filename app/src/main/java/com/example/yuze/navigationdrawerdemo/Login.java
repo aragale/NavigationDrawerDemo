@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -30,7 +29,6 @@ public class Login extends AppCompatActivity {
         Button loginOutBtn = findViewById(R.id.login_btn_cancle);
         usernameEtxt = findViewById(R.id.login_edit_account);
         passwdEtxt = findViewById(R.id.login_edit_pwd);
-        CheckBox rememberPassword = findViewById(R.id.login_remember);
 
         loginBtn.setOnClickListener(m_login_listener);
         registerBtn.setOnClickListener(m_login_listener);
@@ -49,6 +47,7 @@ public class Login extends AppCompatActivity {
                 case R.id.login_btn_cancle:
                     new SignOutTask().execute();
                     State.INSTANCE.sessionId = null;
+                    State.INSTANCE.userName = null;
                     break;
             }
     };

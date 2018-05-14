@@ -175,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        locationClient.stop();//退出时销毁定位
         mMapView.onDestroy();
         mBaiDuMap.setMyLocationEnabled(false);//关闭定位图层
         mMapView = null;

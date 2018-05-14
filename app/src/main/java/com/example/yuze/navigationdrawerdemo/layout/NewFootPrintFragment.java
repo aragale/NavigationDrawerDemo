@@ -1,28 +1,34 @@
 package com.example.yuze.navigationdrawerdemo.layout;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.oss.ClientException;
+import com.alibaba.sdk.android.oss.OSSClient;
+import com.alibaba.sdk.android.oss.ServiceException;
+import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;
+import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;
+import com.alibaba.sdk.android.oss.model.PutObjectRequest;
+import com.alibaba.sdk.android.oss.model.PutObjectResult;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
@@ -32,15 +38,23 @@ import com.baidu.mapapi.model.LatLng;
 import com.example.yuze.navigationdrawerdemo.Constants;
 import com.example.yuze.navigationdrawerdemo.MyApplication;
 import com.example.yuze.navigationdrawerdemo.R;
+import com.example.yuze.navigationdrawerdemo.State;
+import com.example.yuze.navigationdrawerdemo.dto.FPRequest;
+import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPointsResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NewFootPrintFragment extends Fragment implements View.OnClickListener {
 
@@ -58,7 +72,11 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
     private LinearLayout photoLayout;
     private LinearLayout editLayout;
 
-    private ImageView imgShow;
+    private String title = null;
+    private String description = null;
+    private String traceId = null;
+
+    private final List<String> urls = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,7 +126,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         });
 
         desButton.setOnClickListener(v -> {
-            dialog();
+            alertDialog();
         });
 
         return layout;
@@ -177,7 +195,9 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
     private void endTrace() {
         //停止定位
         ((MyApplication) getActivity().getApplication()).isRequestLocation = false;
+        //上传位置信息
         uploadTrace();
+        //清空位置信息队列
         ((MyApplication) getActivity().getApplication()).locationPoints.clear();
     }
 
@@ -196,6 +216,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
             if (locationPointsResponse.getId() == null) {
                 Log.e("上传路途", "get location points err");
             } else {
+                traceId = locationPointsResponse.getId();
                 Log.w("上传路途", s);
             }
         }
@@ -212,46 +233,181 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
      * 打开系统相册
      */
     public void openAlbum() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(intent, 0);
     }
 
+    /**
+     * 这个是回调函数，好滴，由于修改了源代码，可能会导致调试中，IDE对源代码的定位出问题
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == 0) {
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 try {
-                    //获得图片的uri
-                    Uri uri = data.getData();
-                    //获取图片的路径
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                    //从系统表中查询指定Uri对应的照片
-                    Cursor cursor = getActivity().getContentResolver().query(uri, filePathColumn, null, null, null);
-                    //获得用户选择的图片的索引值
-                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                    //将光标移至开头 ，避免越界
-                    cursor.moveToFirst();
-                    //最后根据索引值获取图片路径
-                    String path = cursor.getString(column_index);
-                    cursor.close();
-                    Bitmap bitmap = BitmapFactory.decodeFile(path);
-                    imgShow.setImageBitmap(bitmap);
+                    //获取长度
+                    final int itemCount = data.getClipData().getItemCount();
+                    //if 长度不是0
+                    if (itemCount != 0) {
+                        //创建一个列表，便于后面批量上传到OSS
+                        final ArrayList<InputStream> inputStreams = new ArrayList<>(itemCount);
+                        //遍历
+                        for (int i = 0; i < itemCount; i++) {
+                            InputStream inputStream = getContext()
+                                    .getContentResolver()
+                                    .openInputStream(data.getClipData().getItemAt(i).getUri());
+                            if (inputStream.available() != 0) {
+                                inputStreams.add(inputStream);
+                            }
+                        }
+                        //clear
+                        this.urls.clear();
+                        this.urls.addAll(uploadFilesToOss(inputStreams));
+                    }
                 } catch (Exception e) {
+                    //log error instead of print stack trace....
+                    Log.e(NewFootPrintFragment.class.getSimpleName(), "Select photos", e);
                     e.printStackTrace();
                 }
             }
+
         }
     }
 
-    protected void dialog() {
-        new AlertDialog.Builder(getContext())
-                .setTitle("添加足迹描述：")
-                .setView(new EditText(getContext()))
-                .setPositiveButton("完成", null)
-                .setNegativeButton("取消", null)
-                .show();
+    protected void alertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View v = inflater.inflate(R.layout.description_dialog, null);
+        EditText title = v.findViewById(R.id.title_edit);
+        EditText description = v.findViewById(R.id.description_edit);
+        Button finishBtn = v.findViewById(R.id.finishButton);
+        Button cancelBtn = v.findViewById(R.id.cancelButton);
+        final Dialog dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+        window.setAttributes(layoutParams);
+        window.setGravity(Gravity.CENTER);
+        dialog.setContentView(v);
+        finishBtn.setOnClickListener(v1 -> {
+            this.title = title.getText().toString();
+            this.description = description.getText().toString();
+            dialog.dismiss();
+            UploadFootPrints();
+        });
+        cancelBtn.setOnClickListener(v12 -> {
+            dialog.dismiss();
+        });
+    }
+
+    public void UploadFootPrints() {
+        final FPRequest fpRequest = FPRequest.builder()
+                .title(title)
+                .description(description)
+                .images(this.urls)
+                .traceId(traceId)
+                .build();
+//        Log.i("title",title);？
+//        Log.i("description",description);
+//        Log.i("traceId",traceId);
+        final String fpRequestJson = JsonUtils.write(fpRequest);
+//        Log.i("fpRequestJson",fpRequestJson.toString());
+        new UploadFootPrintsTask().execute(fpRequestJson);
+    }
+
+    private class UploadFootPrintsTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            final FPResponse fpResponse = JsonUtils.read(s, FPResponse.class);
+//            Log.i("fpResponse",fpResponse.getId().toString());
+            if (fpResponse.getId() == null) {
+                Log.e("上传足迹", "get foot prints err");
+            } else {
+                State.INSTANCE.footPrintId = fpResponse.getId();
+                Log.w("上传足迹", s);
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return HttpUtils.post_with_session(
+                    Constants.HOST + Constants.FootPrints,
+                    strings[0]);
+        }
+    }
+
+    /**
+     * 上传输入流列表，返回对应流的url列表
+     *
+     * @param inputStreams 输入流列表
+     * @return url列表
+     */
+    private List<String> uploadFilesToOss(final List<InputStream> inputStreams) {
+        final OSSClient ossClient = ((MyApplication) getContext().getApplicationContext()).ossClient;
+        final List<String> urls = new ArrayList<>(inputStreams.size());
+        //初始计数
+        final AtomicInteger doneCount = new AtomicInteger(0);
+        //遍历
+        inputStreams.forEach(is -> {
+            try {
+                final int size = is.available();
+                if (size > 0) {
+                    final byte[] bytes = new byte[size];
+                    final int read = is.read(bytes);
+                    is.close();
+                    if (read != 0) {
+                        final String key = UUID.randomUUID().toString();
+                        final String url = Constants.OSS_URL_PREFIX + key + ".jpg";
+                        urls.add(url);
+                        PutObjectRequest put = new PutObjectRequest(
+                                Constants.OSS_BUCKET_NAME,
+                                key,
+                                bytes);
+                        OSSAsyncTask task = ossClient.asyncPutObject(put, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
+                            @Override
+                            public void onSuccess(PutObjectRequest request, PutObjectResult result) {
+                                Log.d("PutObject", url);
+                                Log.d("ETag", result.getETag());
+                                Log.d("RequestId", result.getRequestId());
+                                doneCount.incrementAndGet();
+                                if (doneCount.get() == inputStreams.size()) {
+                                    Toast.makeText(getContext(), "图片上传完成", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(PutObjectRequest request, ClientException clientExcepion, ServiceException serviceException) {
+                                // 请求异常
+                                Log.d("PutObject", url);
+                                if (clientExcepion != null) {
+                                    // 本地异常如网络异常等
+                                    Log.e("Upload", "本地异常如网络异常等", clientExcepion);
+                                }
+                                if (serviceException != null) {
+                                    // 服务异常
+                                    Log.e("ErrorCode", serviceException.getErrorCode());
+                                    Log.e("RequestId", serviceException.getRequestId());
+                                    Log.e("HostId", serviceException.getHostId());
+                                    Log.e("RawMessage", serviceException.getRawMessage());
+                                }
+                                doneCount.incrementAndGet();
+                                if (doneCount.get() == inputStreams.size()) {
+                                    Toast.makeText(getContext(), "图片上传完成", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return urls;
     }
 }
 

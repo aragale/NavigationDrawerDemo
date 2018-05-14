@@ -22,4 +22,9 @@ public enum  State {
      */
     public String userId;
 
+    /**
+     * 足迹ID
+     */
+    public String footPrintId;
+
 }

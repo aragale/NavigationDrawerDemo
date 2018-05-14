@@ -73,9 +73,6 @@ public class MyApplication extends Application {
         //初始化百度地图
         SDKInitializer.initialize(getApplicationContext());
 
-        //setClipboard("初始化");
-        //Toast.makeText(getApplicationContext(), getClipboard(), Toast.LENGTH_SHORT).show();
-
         //请求定位线程
         requestLocationThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -109,6 +106,10 @@ public class MyApplication extends Application {
         this.ossClient = new OSSClient(getApplicationContext(), Constants.OSS_END_POINT, credentialProvider, conf);
     }
 
+    public void initMap() {
+
+    }
+
     public void initLocation() {
         LocationClientOption option = new LocationClientOption();
 
@@ -120,16 +121,16 @@ public class MyApplication extends Application {
         //设置发起定位请求的间隔需要大于等于1000ms才是有效的
         option.setScanSpan(3000);
         //可选，默认false,设置是否使用gps
-        option.setOpenGps(true);
+//        option.setOpenGps(true);
         option.setIsNeedAddress(true);
         //可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
-        option.setLocationNotify(true);
+//        option.setLocationNotify(true);
         //设置是否在stop的时候杀死这个进程，默认不杀死
         option.setIgnoreKillProcess(false);
 
         // 设置定位方式的优先级。
         // 当gps可用，而且获取了定位结果时，不再发起网络请求，直接返回给用户坐标。这个选项适合希望得到准确坐标位置的用户。如果gps不可用，再发起网络请求，进行定位。
-        option.setPriority(LocationClientOption.GpsFirst);
+//        option.setPriority(LocationClientOption.GpsFirst);
 
         mLocationClient.setLocOption(option);
         mLocationClient.start();
@@ -206,7 +207,8 @@ public class MyApplication extends Application {
         final LocalDateTime lastTime =
                 LocalDateTime.parse(last.getTime(), Constants.BAIDU_LOCATION_TIME_FORMATTER);
         //位置是否相同
-        boolean sameLocation = location.getLongitude() == last.getLongitude() && location.getLatitude() == last.getLatitude();
+        boolean sameLocation = location.getLongitude() == last.getLongitude() &&
+                location.getLatitude() == last.getLatitude();
         //时间大于30秒
         boolean elapsedGET30Seconds = lastTime.until(locationTime, ChronoUnit.SECONDS) >= 30L;
         return !sameLocation && elapsedGET30Seconds;

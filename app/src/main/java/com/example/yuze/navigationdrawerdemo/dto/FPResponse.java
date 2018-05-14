@@ -1,7 +1,5 @@
 package com.example.yuze.navigationdrawerdemo.dto;
 
-import android.media.Image;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -14,11 +12,11 @@ import lombok.Setter;
 @Getter
 public class FPResponse {
 
-    @JsonProperty("id")
-    private String FPId;
+    private String id;
     private String title;
     private String description;
-    private List<Image> images;
+    private List<String> images;
     @JsonProperty("trace_id")
     private String traceId;
+    private String time;
 }
