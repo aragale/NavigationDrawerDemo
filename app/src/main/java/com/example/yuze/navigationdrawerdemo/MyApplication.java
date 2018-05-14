@@ -72,6 +72,9 @@ public class MyApplication extends Application {
      */
     private ClipboardManager clipboard = null;
 
+    public String userName = null;
+    public String footId = null;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -243,8 +246,8 @@ public class MyApplication extends Application {
     private void checkShare() {
         final String[] messageToUsernameAndFootId = ShareUtils.messageToUsernameAndFootId(getClipboard());
         if (messageToUsernameAndFootId != null) {
-            String userName = messageToUsernameAndFootId[0];
-            String footId = messageToUsernameAndFootId[1];
+            userName = messageToUsernameAndFootId[0];
+            footId = messageToUsernameAndFootId[1];
             Log.i("checkShare", String.format("用户:%s, 足迹:%s", userName, footId));
             Toast.makeText(getApplicationContext(),
                     String.format("用户:%s, 足迹:%s", userName, footId),

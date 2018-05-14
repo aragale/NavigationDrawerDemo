@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.yuze.navigationdrawerdemo.ExportActivity;
 import com.example.yuze.navigationdrawerdemo.FootPrint;
 import com.example.yuze.navigationdrawerdemo.Login;
 import com.example.yuze.navigationdrawerdemo.R;
@@ -89,6 +90,9 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_SHARE:
                 if (State.INSTANCE.sessionId != null) {
                     Toast.makeText(mContext, "Messages", Toast.LENGTH_SHORT).show();
+                    intent.setClass(mContext, ExportActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
                     if (mCallBack != null) mCallBack.onShareMenuSelected();
                 } else {
                     Toast.makeText(mContext, "请先登录", Toast.LENGTH_SHORT).show();

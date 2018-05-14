@@ -4,25 +4,54 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    <!--<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="60dp"-->
+    <!--android:background="@color/colorPrimaryDark">-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="start"-->
+    <!--android:gravity="start|center"-->
+    <!--android:text="查看分享"-->
+    <!--android:textColor="@color/white"-->
+    <!--android:textSize="18sp" />-->
+
+    <!--</android.support.v7.widget.Toolbar>-->
+
+    <TextView
+        android:id="@+id/foot_print_title"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/colorPrimaryDark">
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:textSize="18dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:gravity="start|center"
-            android:text="查看分享"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-
-    </android.support.v7.widget.Toolbar>
+    <TextView
+        android:id="@+id/foot_print_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textColor="#000"
+        android:textSize="18dp" />
 
     <com.baidu.mapapi.map.TextureMapView
         android:id="@+id/textureMap"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.baidu.mapapi.map.TextureMapView>
+        android:layout_height="200dp"
+        android:layout_marginTop="5dp"></com.baidu.mapapi.map.TextureMapView>
+
+    <ImageSwitcher
+        android:id="@+id/switcher"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="5dp"></ImageSwitcher>
+
+    <Gallery
+        android:id="@+id/gallery"
+        android:background="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="5dp"></Gallery>
 
 </LinearLayout>

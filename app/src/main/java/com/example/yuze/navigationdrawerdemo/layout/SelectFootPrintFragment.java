@@ -31,7 +31,7 @@ public class SelectFootPrintFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new GetFootPrintsTask().execute();
+        new GetFootPrintListTask().execute();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SelectFootPrintFragment extends Fragment {
         return layout;
     }
 
-    public class GetFootPrintsTask extends AsyncTask<Void, Void, String> {//wo刚才也在想这个问题。。嗯，在哪里用，这个应该是一点击查询就用了。。
+    public class GetFootPrintListTask extends AsyncTask<Void, Void, String> {//wo刚才也在想这个问题。。嗯，在哪里用，这个应该是一点击查询就用了。。
 
         @Override
         protected void onPostExecute(String s) {
