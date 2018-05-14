@@ -1,5 +1,6 @@
 package com.example.yuze.navigationdrawerdemo;
 
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -249,6 +250,18 @@ public class MyApplication extends Application {
                     Toast.LENGTH_SHORT)
                     .show();
             //对话框
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialogBuilder.setTitle("您有一条新的足迹分享");
+//            alertDialogBuilder.setMessage();
+            alertDialogBuilder.setPositiveButton("查看详情", (dialog, which) -> {
+
+            });
+            alertDialogBuilder.setNegativeButton("忽略", (dialog, which) -> {
+                alertDialog.cancel();
+            });
+            alertDialog.show();
+
         }
     }
 }
