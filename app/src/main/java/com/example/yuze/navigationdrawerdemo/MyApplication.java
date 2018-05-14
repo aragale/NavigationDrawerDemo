@@ -1,6 +1,8 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.app.Application;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -62,12 +64,17 @@ public class MyApplication extends Application {
      */
     public OSSClient ossClient = null;
 
+    private ClipboardManager clipboard = null;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
+        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         //初始化百度地图
         SDKInitializer.initialize(getApplicationContext());
+
+        //setClipboard("初始化");
+        //Toast.makeText(getApplicationContext(), getClipboard(), Toast.LENGTH_SHORT).show();
 
         //请求定位线程
         requestLocationThread = new Thread(() -> {
@@ -203,5 +210,21 @@ public class MyApplication extends Application {
         //时间大于30秒
         boolean elapsedGET30Seconds = lastTime.until(locationTime, ChronoUnit.SECONDS) >= 30L;
         return !sameLocation && elapsedGET30Seconds;
+    }
+
+    /**
+     * 获取剪贴板字符串
+     * @return 剪贴板字符串
+     */
+    public String getClipboard() {
+        return clipboard.getPrimaryClip().getItemAt(0).getText().toString();
+    }
+
+    /**
+     * 设置剪贴板内容
+     * @param text 内容
+     */
+    public void setClipboard(final String text) {
+        clipboard.setPrimaryClip(ClipData.newPlainText(text, text));
     }
 }
