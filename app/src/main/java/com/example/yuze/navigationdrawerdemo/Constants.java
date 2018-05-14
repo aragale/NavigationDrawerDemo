@@ -1,6 +1,8 @@
 package com.example.yuze.navigationdrawerdemo;
 
-import java.time.format.DateTimeFormatter;
+
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * chang liang
@@ -22,7 +24,7 @@ public class Constants {
      * 百度定位时间格式
      */
     public static final DateTimeFormatter BAIDU_LOCATION_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 阿里云OSS端点
@@ -48,4 +50,9 @@ public class Constants {
      * Access Secret Key
      */
     public static final String OSS_ACCESS_SECRET_KEY = "Ypx0vBAzYhLfhLIEaBcgqVckmnnBWi";
+
+    /**
+     * 时间间隔
+     */
+    public static final int DRAW_TRACE_PERIOD = 10;
 }

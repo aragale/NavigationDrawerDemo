@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.yuze.navigationdrawerdemo"
-        minSdkVersion 26
+        minSdkVersion 22
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -55,4 +55,5 @@ dependencies {
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:3.2.0"
     implementation 'com.android.support:design:27.1.0'
     implementation 'com.aliyun.dpa:oss-android-sdk:+'
+    implementation 'joda-time:joda-time:2.9.9'
 }

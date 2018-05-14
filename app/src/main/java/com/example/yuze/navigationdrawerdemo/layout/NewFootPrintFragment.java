@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -46,6 +47,12 @@ import com.example.yuze.navigationdrawerdemo.dto.LocationPointsResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -54,6 +61,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NewFootPrintFragment extends Fragment implements View.OnClickListener {
@@ -180,7 +189,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
             //当停止定位时，循环结束，线程结束
             while (((MyApplication) getActivity().getApplication()).isRequestLocation) {
                 try {
-                    TimeUnit.SECONDS.sleep(30L);
+                    TimeUnit.SECONDS.sleep(Constants.DRAW_TRACE_PERIOD);
                 } catch (InterruptedException e) {
                     Log.e("Route Paint", "InterruptedException", e);
                 }

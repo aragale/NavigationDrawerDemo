@@ -21,9 +21,10 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
+import com.example.yuze.navigationdrawerdemo.utils.ShareUtils;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import org.joda.time.LocalDateTime;
+
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -64,14 +65,23 @@ public class MyApplication extends Application {
      */
     public OSSClient ossClient = null;
 
+    /**
+     * 剪贴板管理器
+     */
     private ClipboardManager clipboard = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         //初始化百度地图
         SDKInitializer.initialize(getApplicationContext());
+
+        //setClipboard("初始化");
+        //Toast.makeText(getApplicationContext(), getClipboard(), Toast.LENGTH_SHORT).show();
+        //初始化剪贴板管理器
+        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        //添加监听器，剪贴板内容变更时，检测内容
+        clipboard.addPrimaryClipChangedListener(() -> checkShare());
 
         //请求定位线程
         requestLocationThread = new Thread(() -> {
@@ -104,10 +114,6 @@ public class MyApplication extends Application {
                 Constants.OSS_ACCESS_SECRET_KEY);
 
         this.ossClient = new OSSClient(getApplicationContext(), Constants.OSS_END_POINT, credentialProvider, conf);
-    }
-
-    public void initMap() {
-
     }
 
     public void initLocation() {
@@ -207,11 +213,10 @@ public class MyApplication extends Application {
         final LocalDateTime lastTime =
                 LocalDateTime.parse(last.getTime(), Constants.BAIDU_LOCATION_TIME_FORMATTER);
         //位置是否相同
-        boolean sameLocation = location.getLongitude() == last.getLongitude() &&
-                location.getLatitude() == last.getLatitude();
-        //时间大于30秒
-        boolean elapsedGET30Seconds = lastTime.until(locationTime, ChronoUnit.SECONDS) >= 30L;
-        return !sameLocation && elapsedGET30Seconds;
+        boolean sameLocation = location.getLongitude() == last.getLongitude() && location.getLatitude() == last.getLatitude();
+        //时间大于10秒
+        boolean elapsedGET10Seconds = locationTime.minusSeconds(Constants.DRAW_TRACE_PERIOD).isAfter(lastTime);
+        return !sameLocation && elapsedGET10Seconds;
     }
 
     /**
@@ -228,5 +233,22 @@ public class MyApplication extends Application {
      */
     public void setClipboard(final String text) {
         clipboard.setPrimaryClip(ClipData.newPlainText(text, text));
+    }
+
+    /**
+     * 检测分享
+     */
+    private void checkShare() {
+        final String[] messageToUsernameAndFootId = ShareUtils.messageToUsernameAndFootId(getClipboard());
+        if (messageToUsernameAndFootId != null) {
+            String userName = messageToUsernameAndFootId[0];
+            String footId = messageToUsernameAndFootId[1];
+            Log.i("checkShare", String.format("用户:%s, 足迹:%s", userName, footId));
+            Toast.makeText(getApplicationContext(),
+                    String.format("用户:%s, 足迹:%s", userName, footId),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            //对话框
+        }
     }
 }

@@ -41,7 +41,7 @@ public class ShareUtils {
      */
     public static String[] messageToUsernameAndFootId(final String message) {
         final Matcher matcher = SHARE_PATTERN.matcher(message);
-        if (matcher.find()) {
+        if (matcher.find() && matcher.groupCount() != 3) {
             String[] result = new String[2];
             result[0] = matcher.group(1);
             result[1] = matcher.group(2);
