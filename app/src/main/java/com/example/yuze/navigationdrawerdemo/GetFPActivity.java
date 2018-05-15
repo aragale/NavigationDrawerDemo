@@ -3,7 +3,6 @@ package com.example.yuze.navigationdrawerdemo;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -125,7 +124,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
 
         @Override
         public int getCount() {
-            return State.INSTANCE.fpResponse.getImages().size();
+            return State.INSTANCE.footPrintImages.size();
         }
 
         @Override
@@ -141,9 +140,8 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView i = new ImageView(mContext);
-            //Uri parse = Uri.parse(urls.get(position));
-            //i.setImageURI(parse);
-            i.setImageBitmap(BitmapFactory.decodeFile("/storage/emulated/0/tencent/MicroMsg/WeiXin/mmexport1524323161888.jpg"));
+            i.setImageBitmap(State.INSTANCE.footPrintImages.get(position));
+            //i.setImageBitmap(BitmapFactory.decodeFile("/storage/emulated/0/tencent/MicroMsg/WeiXin/mmexport1524323161888.jpg"));
             //设置边界对齐
             i.setAdjustViewBounds(true);
             //设置布局参数

@@ -3,6 +3,7 @@ package com.example.yuze.navigationdrawerdemo;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("GetFPActivity", "获取足迹活动");
             } else {
                 State.INSTANCE.fpResponse = fpResponse;
+                new GetFootPrintImagesTask().execute();
             }
         }
 
@@ -250,6 +252,20 @@ public class MainActivity extends AppCompatActivity {
             return HttpUtils.get_with_session(
                     Constants.HOST + Constants.FootPrints + "/" + strings[0],
                     State.INSTANCE.sessionId);
+        }
+    }
+
+    private class GetFootPrintImagesTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            State.INSTANCE.footPrintImages.clear();
+            for (String url : State.INSTANCE.fpResponse.getImages()) {
+                Bitmap bitmap = HttpUtils.getBitmap(url);
+                if (bitmap != null) {
+                    State.INSTANCE.footPrintImages.add(bitmap);
+                }
+            }
+            return null;
         }
     }
 }

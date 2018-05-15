@@ -1,6 +1,11 @@
 package com.example.yuze.navigationdrawerdemo;
 
+import android.graphics.Bitmap;
+
 import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 全局状态
@@ -12,17 +17,17 @@ public enum  State {
     /**
      * 会话ID
      */
-    public String sessionId = "035527c2-d7a1-4ef9-b96b-e8ef254f325a";
+    public String sessionId;
 
     /**
      * 用户名称
      */
-    public String userName = "tom";
+    public String userName;
 
     /**
      * 用户ID
      */
-    public String userId = "1f4da25c-5ce6-4e36-b82e-ca18edcde4ed";
+    public String userId;
 
     /**
      * 足迹ID
@@ -34,4 +39,8 @@ public enum  State {
      */
     public FPResponse fpResponse;
 
+    /**
+     * 足迹图片列表
+     */
+    public List<Bitmap> footPrintImages = new ArrayList<>();
 }
