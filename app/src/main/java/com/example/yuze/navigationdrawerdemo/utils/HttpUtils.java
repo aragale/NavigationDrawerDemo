@@ -114,7 +114,7 @@ public class HttpUtils {
         }
     }
 
-    public static void delete_with_session(String url, String session) {
+    public static boolean delete_with_session(String url, String session) {
         Request request = new Request.Builder()
                 .url(url)
                 .delete()
@@ -122,10 +122,10 @@ public class HttpUtils {
                 .build();
         try {
             final Response response = client.newCall(request).execute();
-            final String string = response.body().string();
-            Log.w("delete", string);
+            return JsonUtils.read(response.body().string(), Boolean.class);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
