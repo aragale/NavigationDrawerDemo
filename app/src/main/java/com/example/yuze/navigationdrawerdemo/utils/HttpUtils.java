@@ -121,7 +121,9 @@ public class HttpUtils {
                 .addHeader("session", session)
                 .build();
         try {
-            client.newCall(request).execute();
+            final Response response = client.newCall(request).execute();
+            final String string = response.body().string();
+            Log.w("delete", string);
         } catch (IOException e) {
             e.printStackTrace();
         }
