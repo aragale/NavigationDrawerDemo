@@ -30,6 +30,11 @@ public enum  State {
     public String userId;
 
     /**
+     * 路径ID
+     */
+    public String traceId;
+
+    /**
      * 足迹ID
      */
     public String footPrintId;

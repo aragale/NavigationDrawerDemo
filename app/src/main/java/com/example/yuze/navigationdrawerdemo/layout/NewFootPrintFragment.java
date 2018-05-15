@@ -74,7 +74,6 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
 
     private String title = null;
     private String description = null;
-    private String traceId = null;
 
     private final List<String> urls = new ArrayList<>();
 
@@ -221,7 +220,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
             if (locationPointsResponse.getId() == null) {
                 Log.e("上传路途", "get location points err");
             } else {
-                traceId = locationPointsResponse.getId();
+                State.INSTANCE.traceId = locationPointsResponse.getId();
                 Log.w("上传路途", s);
                 //上传足迹
                 uploadFootPrints();
@@ -322,7 +321,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                 .title(title)
                 .description(description)
                 .images(this.urls)
-                .traceId(traceId)
+                .traceId(State.INSTANCE.traceId)
                 .build();
         final String fpRequestJson = JsonUtils.write(fpRequest);
         new UploadFootPrintsTask().execute(fpRequestJson);

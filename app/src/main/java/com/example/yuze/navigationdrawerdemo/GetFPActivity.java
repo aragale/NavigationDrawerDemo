@@ -91,7 +91,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         gallery.setAdapter(new ImageAdapter(this));
         gallery.setOnItemSelectedListener(this);
 
-//        drawRoute();
+        drawRoute();
     }
 
     @Override

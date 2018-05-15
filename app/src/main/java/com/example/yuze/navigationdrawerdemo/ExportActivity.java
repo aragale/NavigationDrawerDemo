@@ -12,9 +12,9 @@ public class ExportActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        shareFootPrint(this, null);
         String text = ShareUtils.usernameAndFootIdToMessage(State.INSTANCE.userName, State.INSTANCE.footPrintId);
         ((MyApplication) getApplication()).setClipboard(text);
+        shareFootPrint(this, text);
     }
 
     public static void shareFootPrint(Context context, String extraText) {
