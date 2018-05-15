@@ -5,20 +5,31 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/list_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:text="所有足迹"
         android:textColor="#000"
         android:textSize="25dp" />
 
+    <ImageView
+        android:id="@+id/divide_line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/list_title"
+        android:background="#bee" />
+
     <ListView
         android:id="@+id/foot_print_list"
         android:layout_width="match_parent"
-        android:paddingTop="60dp"
-        android:paddingBottom="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divide_line"
+        android:layout_marginTop="5dp"
         android:cacheColorHint="#00000000"
-        android:layout_height="match_parent"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll"></ListView>
+        android:divider="#bee"
+        android:dividerHeight="2dp"
+        android:listSelector="#abc"></ListView>
+
 </RelativeLayout>

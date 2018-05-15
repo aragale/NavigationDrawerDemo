@@ -61,7 +61,7 @@ public class SelectFootPrintFragment extends Fragment {
 
         //添加长按弹出菜单
         fpList.setOnCreateContextMenuListener((menu, v, menuInfo) -> {
-            menu.setHeaderTitle("操作足迹");
+//            menu.setHeaderTitle("操作足迹");
             menu.add(0, 0, 0, "查看");
             menu.add(0, 1, 0, "删除");
             menu.add(0, 2, 0, "分享");
