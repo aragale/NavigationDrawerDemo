@@ -32,6 +32,7 @@ public class SelectFootPrintFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
+            //阻塞获取足迹列表
             new GetFootPrintListTask().execute().get();
         } catch (Exception e) {
             e.printStackTrace();
