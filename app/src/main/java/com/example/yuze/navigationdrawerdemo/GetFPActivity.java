@@ -1,6 +1,7 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -58,7 +59,14 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.get_foot_print);
 
-        new GetFootPrintTask().execute(State.INSTANCE.sessionId);
+        if (State.INSTANCE.sessionId == null) {
+            Intent intent = new Intent(this, Login.class);
+            startActivity(intent);
+        } else {
+
+            new GetFootPrintTask().execute(State.INSTANCE.sessionId);
+            new GetTraceTask().execute(State.INSTANCE.sessionId);
+        }
 
         title = findViewById(R.id.foot_print_title);
         description = findViewById(R.id.foot_print_description);
@@ -83,7 +91,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         gallery.setAdapter(new ImageAdapter(this));
         gallery.setOnItemSelectedListener(this);
 
-        drawRoute();
+//        drawRoute();
     }
 
     @Override
@@ -192,6 +200,9 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
                 Log.e("GetTraceTask", "获取足迹活动");
             } else {
                 positions = locationPointsResponse.getPositions();
+                for (int i = 0; i < positions.size(); i++) {
+                    Log.w("positions", positions.get(i).toString());
+                }
             }
         }
 
