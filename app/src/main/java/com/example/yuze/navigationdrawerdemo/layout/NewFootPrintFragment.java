@@ -141,6 +141,10 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                 Toast.makeText(getActivity().getApplicationContext(), "开始记录", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.end_trace:
+                //判断标题是否为空
+                if (title == null || title.equals("")) {
+                    alertDialog();
+                }
                 //记录结束
                 endTrace();
                 startBtn.setBackgroundColor(Color.rgb(176, 196, 222));
@@ -279,10 +283,12 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                     e.printStackTrace();
                 }
             }
-
         }
     }
 
+    /**
+     * 标题和描述
+     */
     protected void alertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());

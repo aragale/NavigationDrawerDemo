@@ -207,6 +207,10 @@ public class MainActivity extends AppCompatActivity {
      * 检测分享
      */
     private void checkShare() {
+        //若未登录，不检测
+        if (State.INSTANCE.sessionId == null) {
+            return;
+        }
         final String[] messageToUsernameAndFootId = ShareUtils.messageToUsernameAndFootId(
                 ((MyApplication) getApplication()).getClipboard());
         if (messageToUsernameAndFootId != null) {

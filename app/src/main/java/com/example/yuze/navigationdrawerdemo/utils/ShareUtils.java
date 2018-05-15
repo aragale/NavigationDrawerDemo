@@ -8,19 +8,19 @@ public class ShareUtils {
     /**
      * 分享消息模板
      */
-    private static final String SHARE_TEMPLATE = "%s和你分享了一个足迹，复制这条消息，快去看看吧！  #%s#";
+    private static final String SHARE_TEMPLATE = "%s和你分享了一个足迹，复制这条消息，快去看看吧！#%s#";
 
     /**
      * 分享消息模板
      */
-    private static final Pattern SHARE_PATTERN = Pattern.compile("(.+?)和你分享了一个足迹，复制这条消息，快去看看吧！  #(.+?)#");
+    private static final Pattern SHARE_PATTERN = Pattern.compile("(.+?)和你分享了一个足迹，复制这条消息，快去看看吧！#(.+?)#");
 
     /**
      * 主方法，用于测试
      */
     public static void main(String[] args) {
         //测试「messageToUsernameAndFootId」方法
-        String message1 = "小明和你分享了一个足迹，复制这条消息，快去看看吧！  #b02dfcb8-c62d-4c99-b2fe-643b85e75e84#";
+        String message1 = "tom和你分享了一个足迹，复制这条消息，快去看看吧！#7677a0fb-5950-4fc6-8ce8-e4f907395c9f#";
         String[] result = messageToUsernameAndFootId(message1);
         System.out.println("用户名：" + result[0] + "\n足迹ID：" + result[1]);
 

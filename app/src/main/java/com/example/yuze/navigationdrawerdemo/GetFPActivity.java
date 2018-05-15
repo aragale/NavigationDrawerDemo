@@ -191,14 +191,13 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
 
     private void drawRoute() {
         ArrayList<LatLng> latLngs = new ArrayList<>();
-        if (positions != null) {
+        if (positions != null && positions.size() >= 2) {
             for (int i = 0; i < positions.size(); i++) {
                 latLngs.add(new LatLng(positions.get(i).getLatitude(), positions.get(i).getLongitude()));
             }
             OverlayOptions overlayOptions = new PolylineOptions().width(6)
                     .color(0xaaff0000)
                     .points(latLngs);
-
             polyline = (Polyline) mBaiDuMap.addOverlay(overlayOptions);
         }
     }
