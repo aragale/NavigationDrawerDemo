@@ -193,7 +193,7 @@ public class MyApplication extends Application {
         if (isShowLoc) {
             LatLng ll = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
             MapStatus.Builder builder = new MapStatus.Builder();
-            //builder.target(ll).zoom(18.0f);
+            builder.target(ll).zoom(18.0f);
             builder.target(ll);
             map.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
         }
