@@ -1,5 +1,7 @@
 package com.example.yuze.navigationdrawerdemo;
 
+import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
+
 /**
  * 全局状态
  */
@@ -26,5 +28,10 @@ public enum  State {
      * 足迹ID
      */
     public String footPrintId;
+
+    /**
+     * 足迹
+     */
+    public FPResponse fpResponse;
 
 }

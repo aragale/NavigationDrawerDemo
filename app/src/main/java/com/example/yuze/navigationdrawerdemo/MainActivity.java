@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -18,8 +19,11 @@ import android.widget.Toast;
 import com.baidu.location.LocationClient;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.TextureMapView;
+import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
 import com.example.yuze.navigationdrawerdemo.layout.DrawerHeader;
 import com.example.yuze.navigationdrawerdemo.layout.DrawerMenuItem;
+import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
+import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 import com.example.yuze.navigationdrawerdemo.utils.ShareUtils;
 import com.mindorks.placeholderview.PlaceHolderView;
 
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TextureMapView mMapView;
     private BaiduMap mBaiDuMap;
     LocationClient locationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,10 +215,8 @@ public class MainActivity extends AppCompatActivity {
             //覆盖剪贴板
             ((MyApplication) getApplication()).setClipboard("");
             Log.i("checkShare", String.format("用户:%s, 足迹:%s", ((MyApplication) getApplication()).userName, ((MyApplication) getApplication()).footId));
-            Toast.makeText(getApplicationContext(),
-                    String.format("用户:%s, 足迹:%s", ((MyApplication) getApplication()).userName, ((MyApplication) getApplication()).footId),
-                    Toast.LENGTH_SHORT)
-                    .show();
+            //获取足迹
+            new GetFootPrintTask().execute(messageToUsernameAndFootId[1]);
             //对话框
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle("您有一条新的足迹分享");
@@ -228,6 +231,25 @@ public class MainActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
+        }
+    }
+
+    private class GetFootPrintTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            final FPResponse fpResponse = JsonUtils.read(s, FPResponse.class);
+            if (fpResponse.getId() == null) {
+                Log.e("GetFPActivity", "获取足迹活动");
+            } else {
+                State.INSTANCE.fpResponse = fpResponse;
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return HttpUtils.get_with_session(
+                    Constants.HOST + Constants.FootPrints + "/" + strings[0],
+                    State.INSTANCE.sessionId);
         }
     }
 }

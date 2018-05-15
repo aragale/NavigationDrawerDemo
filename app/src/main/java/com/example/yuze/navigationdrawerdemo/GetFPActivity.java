@@ -3,6 +3,7 @@ package com.example.yuze.navigationdrawerdemo;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +26,6 @@ import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
-import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPointsResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
@@ -42,7 +42,6 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
     private ImageSwitcher imageSwitcher;
 
     private String footPrintID;
-    private List<String> urls = new ArrayList<>();
     private ArrayList<Bitmap> images = new ArrayList<>();
 
     private TextView title;
@@ -54,7 +53,8 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.footPrintID = ((MyApplication) getApplication()).footId;
+        this.footPrintID = State.INSTANCE.fpResponse.getId();
+
         //设置窗口无标题
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.get_foot_print);
@@ -63,13 +63,14 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
             Intent intent = new Intent(this, Login.class);
             startActivity(intent);
         } else {
-
-            new GetFootPrintTask().execute(State.INSTANCE.sessionId);
             new GetTraceTask().execute(State.INSTANCE.sessionId);
         }
 
         title = findViewById(R.id.foot_print_title);
         description = findViewById(R.id.foot_print_description);
+
+        title.setText(State.INSTANCE.fpResponse.getTitle());
+        description.setText(State.INSTANCE.fpResponse.getDescription());
 
         mMapView = findViewById(R.id.textureMap);
         mBaiDuMap = mMapView.getMap();
@@ -77,7 +78,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         //设置地图类型为普通图
         mBaiDuMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         //关闭缩放按钮
-        mMapView.showZoomControls(false);
+        mMapView.showZoomControls(true);
 
         imageSwitcher = findViewById(R.id.switcher);
         //注意在使用一个ImageSwitcher之前一定要调用setFactory方法，否则setImageResource方法报空指针异常。
@@ -110,7 +111,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         imageView.setBackgroundColor(0xFF000000);
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setLayoutParams(new ImageSwitcher.LayoutParams(
-                200, 200
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         ));
         return imageView;
     }
@@ -124,7 +125,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
 
         @Override
         public int getCount() {
-            return urls.size();
+            return State.INSTANCE.fpResponse.getImages().size();
         }
 
         @Override
@@ -140,8 +141,9 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ImageView i = new ImageView(mContext);
-
-            i.setImageBitmap(images.get(position));
+            //Uri parse = Uri.parse(urls.get(position));
+            //i.setImageURI(parse);
+            i.setImageBitmap(BitmapFactory.decodeFile("/storage/emulated/0/tencent/MicroMsg/WeiXin/mmexport1524323161888.jpg"));
             //设置边界对齐
             i.setAdjustViewBounds(true);
             //设置布局参数
@@ -149,27 +151,6 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             return i;
-        }
-    }
-
-    private class GetFootPrintTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPostExecute(String s) {
-            final FPResponse fpResponse = JsonUtils.read(s, FPResponse.class);
-            if (fpResponse.getId() == null) {
-                Log.e("GetFPActivity", "获取足迹活动");
-            } else {
-                title.setText(fpResponse.getTitle());
-                description.setText(fpResponse.getDescription());
-                urls = fpResponse.getImages();
-                traceId = fpResponse.getTraceId();
-                new GetImagesTask().execute(urls);
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            return HttpUtils.get_with_session(Constants.HOST + Constants.FootPrints + "/" + footPrintID, strings[0]);
         }
     }
 
