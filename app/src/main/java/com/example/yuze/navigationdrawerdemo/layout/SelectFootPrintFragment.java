@@ -31,26 +31,35 @@ public class SelectFootPrintFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new GetFootPrintListTask().execute();
+        try {
+            new GetFootPrintListTask().execute().get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.select_foot_print, container, false);
         fpList = layout.findViewById(R.id.foot_print_list);
-        adapter = new SimpleAdapter(getContext(), list, R.layout.simpleitem,
+        adapter = new SimpleAdapter(
+                getActivity(),
+                list,
+                R.layout.simpleitem,
                 new String[]{"title", "time", "description", "images"},
-                new int[]{R.id.title, R.id.time, R.id.description, R.id.image});//dehb hao ni lai ug ?
+                new int[]{R.id.title, R.id.time, R.id.description, R.id.image});
         fpList.setAdapter(adapter);
         return layout;
     }
 
-    public class GetFootPrintListTask extends AsyncTask<Void, Void, String> {//wo刚才也在想这个问题。。嗯，在哪里用，这个应该是一点击查询就用了。。
-
+    public class GetFootPrintListTask extends AsyncTask<Void, Void, Void> {
         @Override
-        protected void onPostExecute(String s) {
+        protected Void doInBackground(Void... strings) {
+            String responseJson = HttpUtils.get_with_session(
+                    Constants.HOST + Constants.FootPrintsList +
+                            "?user_id=" + State.INSTANCE.userId, State.INSTANCE.sessionId);
             list.clear();
-            final FPResponse[] fpResponses = JsonUtils.read(s, FPResponse[].class);
+            final FPResponse[] fpResponses = JsonUtils.read(responseJson, FPResponse[].class);
             Log.w("footprints", fpResponses.toString());
             //遍历
             for (FPResponse r : fpResponses) {
@@ -65,14 +74,7 @@ public class SelectFootPrintFragment extends Fragment {
                     list.add(item);
                 }
             }
-
-        }
-
-        @Override
-        protected String doInBackground(Void... strings) {
-            return HttpUtils.get_with_session(
-                    Constants.HOST + Constants.FootPrintsList +
-                            "?user_id=" + State.INSTANCE.userId, State.INSTANCE.sessionId);
+            return null;
         }
     }
 }

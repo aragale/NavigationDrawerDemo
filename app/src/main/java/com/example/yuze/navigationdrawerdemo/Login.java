@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -74,7 +73,6 @@ public class Login extends AppCompatActivity {
         protected void onPostExecute(String s) {
             final SignInResponse signInResponse = JsonUtils.read(s, SignInResponse.class);
             if (signInResponse.getSession() == null) {
-                Log.i("session",signInResponse.getSession());
                 Toast.makeText(Login.this, R.string.login_fail, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(Login.this, R.string.login_success, Toast.LENGTH_SHORT).show();
