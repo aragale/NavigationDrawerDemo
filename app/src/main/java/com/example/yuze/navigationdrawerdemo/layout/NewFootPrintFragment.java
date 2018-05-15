@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -47,12 +46,6 @@ import com.example.yuze.navigationdrawerdemo.dto.LocationPointsResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -61,8 +54,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NewFootPrintFragment extends Fragment implements View.OnClickListener {
@@ -145,14 +136,16 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.start_trace:
+                //开始记录
                 startTrace();
                 startBtn.setBackgroundColor(Color.rgb(46, 139, 87));
-                Toast.makeText(getContext(), "开始记录", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "开始记录", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.end_trace:
+                //记录结束
                 endTrace();
                 startBtn.setBackgroundColor(Color.rgb(176, 196, 222));
-                Toast.makeText(getContext(), "记录结束", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "记录结束", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -201,11 +194,16 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         drawRouteThread.start();
     }
 
+    /**
+     * 结束记录路途
+     */
     private void endTrace() {
         //停止定位
         ((MyApplication) getActivity().getApplication()).isRequestLocation = false;
         //上传位置信息
         uploadTrace();
+        //上传足迹
+        uploadFootPrints();
         //清空位置信息队列
         ((MyApplication) getActivity().getApplication()).locationPoints.clear();
     }
@@ -249,7 +247,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
     }
 
     /**
-     * 这个是回调函数，好滴，由于修改了源代码，可能会导致调试中，IDE对源代码的定位出问题
+     * 这个是回调函数
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -265,7 +263,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                         final ArrayList<InputStream> inputStreams = new ArrayList<>(itemCount);
                         //遍历
                         for (int i = 0; i < itemCount; i++) {
-                            InputStream inputStream = getContext()
+                            InputStream inputStream = getActivity()
                                     .getContentResolver()
                                     .openInputStream(data.getClipData().getItemAt(i).getUri());
                             if (inputStream.available() != 0) {
@@ -287,8 +285,8 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
     }
 
     protected void alertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = LayoutInflater.from(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
         View v = inflater.inflate(R.layout.description_dialog, null);
         EditText title = v.findViewById(R.id.title_edit);
         EditText description = v.findViewById(R.id.description_edit);
@@ -303,29 +301,30 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         window.setAttributes(layoutParams);
         window.setGravity(Gravity.CENTER);
         dialog.setContentView(v);
+        //添加描述「完成」按钮
         finishBtn.setOnClickListener(v1 -> {
             this.title = title.getText().toString();
             this.description = description.getText().toString();
             dialog.dismiss();
-            UploadFootPrints();
+            //上传足迹
+            //uploadFootPrints();
         });
         cancelBtn.setOnClickListener(v12 -> {
             dialog.dismiss();
         });
     }
 
-    public void UploadFootPrints() {
+    /**
+     * 上传足迹
+     */
+    public void uploadFootPrints() {
         final FPRequest fpRequest = FPRequest.builder()
                 .title(title)
                 .description(description)
                 .images(this.urls)
                 .traceId(traceId)
                 .build();
-//        Log.i("title",title);？
-//        Log.i("description",description);
-//        Log.i("traceId",traceId);
         final String fpRequestJson = JsonUtils.write(fpRequest);
-//        Log.i("fpRequestJson",fpRequestJson.toString());
         new UploadFootPrintsTask().execute(fpRequestJson);
     }
 
@@ -333,7 +332,6 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         @Override
         protected void onPostExecute(String s) {
             final FPResponse fpResponse = JsonUtils.read(s, FPResponse.class);
-//            Log.i("fpResponse",fpResponse.getId().toString());
             if (fpResponse.getId() == null) {
                 Log.e("上传足迹", "get foot prints err");
             } else {
@@ -357,12 +355,12 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
      * @return url列表
      */
     private List<String> uploadFilesToOss(final List<InputStream> inputStreams) {
-        final OSSClient ossClient = ((MyApplication) getContext().getApplicationContext()).ossClient;
+        final OSSClient ossClient = ((MyApplication) getActivity().getApplicationContext()).ossClient;
         final List<String> urls = new ArrayList<>(inputStreams.size());
         //初始计数
         final AtomicInteger doneCount = new AtomicInteger(0);
         //遍历
-        inputStreams.forEach(is -> {
+        for (InputStream is : inputStreams) {
             try {
                 final int size = is.available();
                 if (size > 0) {
@@ -375,17 +373,15 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                         urls.add(url);
                         PutObjectRequest put = new PutObjectRequest(
                                 Constants.OSS_BUCKET_NAME,
-                                key,
+                                key + ".jpg",
                                 bytes);
                         OSSAsyncTask task = ossClient.asyncPutObject(put, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
                             @Override
                             public void onSuccess(PutObjectRequest request, PutObjectResult result) {
                                 Log.d("PutObject", url);
-                                Log.d("ETag", result.getETag());
-                                Log.d("RequestId", result.getRequestId());
                                 doneCount.incrementAndGet();
                                 if (doneCount.get() == inputStreams.size()) {
-                                    Toast.makeText(getContext(), "图片上传完成", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "图片上传完成", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -406,17 +402,16 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                                 }
                                 doneCount.incrementAndGet();
                                 if (doneCount.get() == inputStreams.size()) {
-                                    Toast.makeText(getContext(), "图片上传完成", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "图片上传完成", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(NewFootPrintFragment.class.getSimpleName(), "上传输入流列表", e);
             }
-        });
+        }
         return urls;
     }
 }
-

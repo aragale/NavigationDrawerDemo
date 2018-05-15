@@ -10,17 +10,17 @@ public enum  State {
     /**
      * 会话ID
      */
-    public String sessionId;
+    public String sessionId = "035527c2-d7a1-4ef9-b96b-e8ef254f325a";
 
     /**
      * 用户名称
      */
-    public String userName;
+    public String userName = "tom";
 
     /**
      * 用户ID
      */
-    public String userId;
+    public String userId = "1f4da25c-5ce6-4e36-b82e-ca18edcde4ed";
 
     /**
      * 足迹ID

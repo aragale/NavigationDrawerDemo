@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:button="@null"
             android:gravity="center"
-            android:text="新建👣" />
+            android:text="新建" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,7 +48,7 @@
             android:layout_height="match_parent"
             android:button="@null"
             android:gravity="center"
-            android:text="查看👣" />
+            android:text="查看" />
     </LinearLayout>
 
 </LinearLayout>

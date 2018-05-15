@@ -1,10 +1,8 @@
 package com.example.yuze.navigationdrawerdemo;
 
-import android.app.AlertDialog;
 import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,7 +21,6 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
-import com.example.yuze.navigationdrawerdemo.utils.ShareUtils;
 
 import org.joda.time.LocalDateTime;
 
@@ -85,8 +82,6 @@ public class MyApplication extends Application {
         //Toast.makeText(getApplicationContext(), getClipboard(), Toast.LENGTH_SHORT).show();
         //初始化剪贴板管理器
         clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        //添加监听器，剪贴板内容变更时，检测内容
-        clipboard.addPrimaryClipChangedListener(() -> checkShare());
 
         //请求定位线程
         requestLocationThread = new Thread(() -> {
@@ -198,7 +193,8 @@ public class MyApplication extends Application {
         if (isShowLoc) {
             LatLng ll = new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
             MapStatus.Builder builder = new MapStatus.Builder();
-            builder.target(ll).zoom(18.0f);
+            //builder.target(ll).zoom(18.0f);
+            builder.target(ll);
             map.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
         }
     }
@@ -238,36 +234,5 @@ public class MyApplication extends Application {
      */
     public void setClipboard(final String text) {
         clipboard.setPrimaryClip(ClipData.newPlainText(text, text));
-    }
-
-    /**
-     * 检测分享
-     */
-    private void checkShare() {
-        final String[] messageToUsernameAndFootId = ShareUtils.messageToUsernameAndFootId(getClipboard());
-        if (messageToUsernameAndFootId != null) {
-            userName = messageToUsernameAndFootId[0];
-            footId = messageToUsernameAndFootId[1];
-            Log.i("checkShare", String.format("用户:%s, 足迹:%s", userName, footId));
-            Toast.makeText(getApplicationContext(),
-                    String.format("用户:%s, 足迹:%s", userName, footId),
-                    Toast.LENGTH_SHORT)
-                    .show();
-            //对话框
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialogBuilder.setTitle("您有一条新的足迹分享");
-            alertDialogBuilder.setMessage(messageToUsernameAndFootId.toString());
-            alertDialogBuilder.setPositiveButton("查看详情", (dialog, which) -> {
-                Intent intent = new Intent();
-                intent.setClass(this, GetFPActivity.class);
-                startActivity(intent);
-            });
-            alertDialogBuilder.setNegativeButton("忽略", (dialog, which) -> {
-                alertDialog.cancel();
-            });
-            alertDialog.show();
-
-        }
     }
 }

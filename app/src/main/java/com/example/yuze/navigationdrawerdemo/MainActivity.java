@@ -1,6 +1,7 @@
 package com.example.yuze.navigationdrawerdemo;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,9 +9,9 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.TextureMapView;
 import com.example.yuze.navigationdrawerdemo.layout.DrawerHeader;
 import com.example.yuze.navigationdrawerdemo.layout.DrawerMenuItem;
+import com.example.yuze.navigationdrawerdemo.utils.ShareUtils;
 import com.mindorks.placeholderview.PlaceHolderView;
 
 import permissions.dispatcher.NeedsPermission;
@@ -184,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
+        checkShare();
         //initMap();
         //((MyApplication) getApplication()).initLocation();
     }
@@ -192,5 +195,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mMapView.onPause();
+    }
+
+    /**
+     * 检测分享
+     */
+    private void checkShare() {
+        final String[] messageToUsernameAndFootId = ShareUtils.messageToUsernameAndFootId(
+                ((MyApplication) getApplication()).getClipboard());
+        if (messageToUsernameAndFootId != null) {
+            //读取用户名和足迹ID
+            ((MyApplication) getApplication()).userName = messageToUsernameAndFootId[0];
+            ((MyApplication) getApplication()).footId = messageToUsernameAndFootId[1];
+            //覆盖剪贴板
+            ((MyApplication) getApplication()).setClipboard("");
+            Log.i("checkShare", String.format("用户:%s, 足迹:%s", ((MyApplication) getApplication()).userName, ((MyApplication) getApplication()).footId));
+            Toast.makeText(getApplicationContext(),
+                    String.format("用户:%s, 足迹:%s", ((MyApplication) getApplication()).userName, ((MyApplication) getApplication()).footId),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            //对话框
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("您有一条新的足迹分享");
+            alertDialogBuilder.setMessage(messageToUsernameAndFootId.toString());
+            alertDialogBuilder.setPositiveButton("查看详情", (dialog, which) -> {
+                Intent intent = new Intent();
+                intent.setClass(this, GetFPActivity.class);
+                startActivity(intent);
+            });
+            alertDialogBuilder.setNegativeButton("忽略", (dialog, which) -> {
+                dialog.dismiss();
+            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
     }
 }
