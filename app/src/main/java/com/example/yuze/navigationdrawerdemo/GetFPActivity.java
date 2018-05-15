@@ -19,8 +19,14 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.Polyline;
+import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextureMapView;
+import com.baidu.mapapi.model.LatLng;
 import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
+import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
+import com.example.yuze.navigationdrawerdemo.dto.LocationPointsResponse;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
@@ -39,7 +45,10 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
     private ArrayList<Bitmap> images = new ArrayList<>();
 
     private TextView title;
-    private TextView decription;
+    private TextView description;
+    private String traceId;
+    private List<LocationPoint> positions = new ArrayList<>();
+    private Polyline polyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +61,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         new GetFootPrintTask().execute(State.INSTANCE.sessionId);
 
         title = findViewById(R.id.foot_print_title);
-        decription = findViewById(R.id.foot_print_description);
+        description = findViewById(R.id.foot_print_description);
 
         mMapView = findViewById(R.id.textureMap);
         mBaiDuMap = mMapView.getMap();
@@ -74,7 +83,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         gallery.setAdapter(new ImageAdapter(this));
         gallery.setOnItemSelectedListener(this);
 
-
+        drawRoute();
     }
 
     @Override
@@ -143,8 +152,9 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
                 Log.e("GetFPActivity", "获取足迹活动");
             } else {
                 title.setText(fpResponse.getTitle());
-                decription.setText(fpResponse.getDescription());
+                description.setText(fpResponse.getDescription());
                 urls = fpResponse.getImages();
+                traceId = fpResponse.getTraceId();
                 new GetImagesTask().execute(urls);
             }
         }
@@ -171,6 +181,38 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
                 }
             }
             return null;
+        }
+    }
+
+    private class GetTraceTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            final LocationPointsResponse locationPointsResponse = JsonUtils.read(s, LocationPointsResponse.class);
+            if (locationPointsResponse.getId() == null) {
+                Log.e("GetTraceTask", "获取足迹活动");
+            } else {
+                positions = locationPointsResponse.getPositions();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return HttpUtils.get_with_session(Constants.HOST + Constants.TRACES + "/" + traceId, strings[0]);
+        }
+    }
+
+    private void drawRoute() {
+        new GetTraceTask().execute(State.INSTANCE.sessionId);
+        ArrayList<LatLng> latLngs = new ArrayList<>();
+        if (positions != null) {
+            for (int i = 0; i < positions.size(); i++) {
+                latLngs.add(new LatLng(positions.get(i).getLatitude(), positions.get(i).getLongitude()));
+            }
+            OverlayOptions overlayOptions = new PolylineOptions().width(6)
+                    .color(0xaaff0000)
+                    .points(latLngs);
+
+            polyline = (Polyline) mBaiDuMap.addOverlay(overlayOptions);
         }
     }
 }
