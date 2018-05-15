@@ -63,7 +63,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
             Intent intent = new Intent(this, Login.class);
             startActivity(intent);
         } else {
-            new GetTraceTask().execute(State.INSTANCE.sessionId);
+            new GetTraceTask().execute(State.INSTANCE.fpResponse.getTraceId());
         }
 
         title = findViewById(R.id.foot_print_title);
@@ -181,20 +181,18 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
                 Log.e("GetTraceTask", "获取足迹活动");
             } else {
                 positions = locationPointsResponse.getPositions();
-                for (int i = 0; i < positions.size(); i++) {
-                    Log.w("positions", positions.get(i).toString());
-                }
+                drawRoute();
             }
         }
 
         @Override
         protected String doInBackground(String... strings) {
-            return HttpUtils.get_with_session(Constants.HOST + Constants.TRACES + "/" + traceId, strings[0]);
+            return HttpUtils.get_with_session(Constants.HOST + Constants.TRACES + "/" + strings[0],
+                    State.INSTANCE.sessionId);
         }
     }
 
     private void drawRoute() {
-        new GetTraceTask().execute(State.INSTANCE.sessionId);
         ArrayList<LatLng> latLngs = new ArrayList<>();
         if (positions != null) {
             for (int i = 0; i < positions.size(); i++) {
