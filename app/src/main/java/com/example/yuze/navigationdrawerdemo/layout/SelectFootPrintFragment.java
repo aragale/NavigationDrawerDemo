@@ -1,6 +1,7 @@
 package com.example.yuze.navigationdrawerdemo.layout;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,11 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.example.yuze.navigationdrawerdemo.Constants;
+import com.example.yuze.navigationdrawerdemo.GetFPActivity;
 import com.example.yuze.navigationdrawerdemo.R;
 import com.example.yuze.navigationdrawerdemo.State;
 import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
+import com.example.yuze.navigationdrawerdemo.task.GetFootPrintImagesTask;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
@@ -50,6 +54,22 @@ public class SelectFootPrintFragment extends Fragment {
                 new String[]{"title", "time", "description", "images"},
                 new int[]{R.id.title, R.id.time, R.id.description, R.id.image});
         fpList.setAdapter(adapter);
+        fpList.setClickable(true);
+        //项目点击监听器
+        fpList.setOnItemClickListener((parent, view, position, id) -> {
+            //修改
+            State.INSTANCE.fpResponse = State.INSTANCE.fpResponses[position];
+            //拉取图片
+            try {
+                new GetFootPrintImagesTask().execute().get();
+            } catch (Exception e) {
+                Log.e("SelectFootPrintFragment", "获取足迹图片", e);
+            }
+            //跳转
+            Intent intent = new Intent();
+            intent.setClass(getActivity(), GetFPActivity.class);
+            startActivity(intent);
+        });
         return layout;
     }
 
@@ -61,19 +81,24 @@ public class SelectFootPrintFragment extends Fragment {
                             "?user_id=" + State.INSTANCE.userId, State.INSTANCE.sessionId);
             list.clear();
             final FPResponse[] fpResponses = JsonUtils.read(responseJson, FPResponse[].class);
-            Log.w("footprints", fpResponses.toString());
-            //遍历
-            for (FPResponse r : fpResponses) {
-                if (r.getId() == null) {
-                    Log.e("footprints", "get footprints err");
-                } else {
-                    Map<String, Object> item = new HashMap<>();
-                    item.put("title", r.getTitle());
-                    item.put("time", r.getTime());
-                    item.put("description", r.getDescription());
-                    item.put("images", r.getImages());
-                    list.add(item);
+            if (fpResponses != null) {
+                //覆盖
+                State.INSTANCE.fpResponses = fpResponses;
+                //遍历
+                for (FPResponse r : fpResponses) {
+                    if (r.getId() == null) {
+                        Log.e("footprints", "get footprints err");
+                    } else {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("title", r.getTitle());
+                        item.put("time", r.getTime());
+                        item.put("description", r.getDescription());
+                        item.put("images", r.getImages());
+                        list.add(item);
+                    }
                 }
+            } else {
+                Toast.makeText(getActivity(), "获取足迹列表异常", Toast.LENGTH_SHORT).show();
             }
             return null;
         }

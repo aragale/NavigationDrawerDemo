@@ -48,4 +48,9 @@ public enum  State {
      * 足迹图片列表
      */
     public List<Bitmap> footPrintImages = new ArrayList<>();
+
+    /**
+     * 足迹响应数组
+     */
+    public FPResponse[] fpResponses;
 }

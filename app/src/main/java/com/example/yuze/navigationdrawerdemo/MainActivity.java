@@ -3,9 +3,7 @@ package com.example.yuze.navigationdrawerdemo;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -20,11 +18,9 @@ import android.widget.Toast;
 import com.baidu.location.LocationClient;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.TextureMapView;
-import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
 import com.example.yuze.navigationdrawerdemo.layout.DrawerHeader;
 import com.example.yuze.navigationdrawerdemo.layout.DrawerMenuItem;
-import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
-import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
+import com.example.yuze.navigationdrawerdemo.task.GetFootPrintTask;
 import com.example.yuze.navigationdrawerdemo.utils.ShareUtils;
 import com.mindorks.placeholderview.PlaceHolderView;
 
@@ -236,40 +232,6 @@ public class MainActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
-        }
-    }
-
-    private class GetFootPrintTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPostExecute(String s) {
-            final FPResponse fpResponse = JsonUtils.read(s, FPResponse.class);
-            if (fpResponse.getId() == null) {
-                Log.e("GetFPActivity", "获取足迹活动");
-            } else {
-                State.INSTANCE.fpResponse = fpResponse;
-                new GetFootPrintImagesTask().execute();
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            return HttpUtils.get_with_session(
-                    Constants.HOST + Constants.FootPrints + "/" + strings[0],
-                    State.INSTANCE.sessionId);
-        }
-    }
-
-    private class GetFootPrintImagesTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            State.INSTANCE.footPrintImages.clear();
-            for (String url : State.INSTANCE.fpResponse.getImages()) {
-                Bitmap bitmap = HttpUtils.getBitmap(url);
-                if (bitmap != null) {
-                    State.INSTANCE.footPrintImages.add(bitmap);
-                }
-            }
-            return null;
         }
     }
 }
