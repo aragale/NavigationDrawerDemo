@@ -358,7 +358,7 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
                 .traceId(State.INSTANCE.traceId)
                 .build();
         final String fpRequestJson = JsonUtils.write(fpRequest);
-        new UploadTraceTask().execute(fpRequestJson);
+        new UpdateFootPrintsTask().execute(fpRequestJson);
     }
 
     private class UpdateFootPrintsTask extends AsyncTask<String, Void, String> {

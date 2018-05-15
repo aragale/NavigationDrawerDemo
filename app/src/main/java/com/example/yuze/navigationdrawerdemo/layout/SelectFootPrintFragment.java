@@ -37,6 +37,7 @@ public class SelectFootPrintFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.select_foot_print, container, false);
         fpList = layout.findViewById(R.id.foot_print_list);
+        new GetFootPrintListTask().execute(State.INSTANCE.sessionId);
         adapter = new SimpleAdapter(getContext(), list, R.layout.simpleitem,
                 new String[]{"title", "time", "description", "images"},
                 new int[]{R.id.title, R.id.time, R.id.description, R.id.image});//dehb hao ni lai ug ?
@@ -51,24 +52,21 @@ public class SelectFootPrintFragment extends Fragment {
             list.clear();
             final FPResponse[] fpResponses = JsonUtils.read(s, FPResponse[].class);
             Log.w("footprints", fpResponses.toString());
-            //遍历
-            Map<String, Object> item = new HashMap<>();
             for (int i = 0; i < fpResponses.length; i++) {
+                Map<String, Object> item = new HashMap<>();
                 item.put("title", fpResponses[i].getTitle());
                 item.put("time", fpResponses[i].getTime());
                 item.put("description", fpResponses[i].getDescription());
                 item.put("images", fpResponses[i].getImages());
                 list.add(item);
-
             }
-
         }
 
         @Override
         protected String doInBackground(String... strings) {
             return HttpUtils.get_with_session(
                     Constants.HOST + Constants.FootPrintsList +
-                            "?user_id=" + State.INSTANCE.userId, State.INSTANCE.sessionId);
+                            "?user_id=" + State.INSTANCE.userId, strings[0]);
         }
     }
 }
