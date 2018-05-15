@@ -202,8 +202,6 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         ((MyApplication) getActivity().getApplication()).isRequestLocation = false;
         //上传位置信息
         uploadTrace();
-        //上传足迹
-        uploadFootPrints();
         //清空位置信息队列
         ((MyApplication) getActivity().getApplication()).locationPoints.clear();
     }
@@ -225,6 +223,8 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
             } else {
                 traceId = locationPointsResponse.getId();
                 Log.w("上传路途", s);
+                //上传足迹
+                uploadFootPrints();
             }
         }
 
