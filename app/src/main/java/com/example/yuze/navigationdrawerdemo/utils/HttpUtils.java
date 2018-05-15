@@ -113,4 +113,33 @@ public class HttpUtils {
             return null;
         }
     }
+
+    public static void delete_with_session(String url, String session) {
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .addHeader("session", session)
+                .build();
+        try {
+            client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String put_with_session(String url, String json) {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .addHeader("session", State.INSTANCE.sessionId)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

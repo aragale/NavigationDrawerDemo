@@ -185,8 +185,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
 
         @Override
         protected String doInBackground(String... strings) {
-            return HttpUtils.get_with_session(Constants.HOST + Constants.TRACES + "/" + strings[0],
-                    State.INSTANCE.sessionId);
+            return HttpUtils.get_with_session(Constants.HOST + Constants.TRACES + "/" + State.INSTANCE.sessionId, strings[0]);
         }
     }
 

@@ -305,8 +305,8 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
             this.title = title.getText().toString();
             this.description = description.getText().toString();
             dialog.dismiss();
-            //上传足迹
-            //uploadFootPrints();
+            //上传足迹修改内容
+            UpdateFootPrints();
         });
         cancelBtn.setOnClickListener(v12 -> {
             dialog.dismiss();
@@ -343,6 +343,39 @@ public class NewFootPrintFragment extends Fragment implements View.OnClickListen
         protected String doInBackground(String... strings) {
             return HttpUtils.post_with_session(
                     Constants.HOST + Constants.FootPrints,
+                    strings[0]);
+        }
+    }
+
+    /**
+     * 修改足迹task
+     */
+    public void UpdateFootPrints() {
+        final FPRequest fpRequest = FPRequest.builder()
+                .title(title)
+                .description(description)
+                .images(this.urls)
+                .traceId(State.INSTANCE.traceId)
+                .build();
+        final String fpRequestJson = JsonUtils.write(fpRequest);
+        new UploadTraceTask().execute(fpRequestJson);
+    }
+
+    private class UpdateFootPrintsTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            final FPResponse fpResponse = JsonUtils.read(s, FPResponse.class);
+            if (fpResponse.getId() == null) {
+                Log.e("修改足迹", "get foot prints err");
+            } else {
+                Log.w("修改足迹", s);
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return HttpUtils.put_with_session(
+                    Constants.HOST + Constants.FootPrints + "/" + State.INSTANCE.footPrintId,
                     strings[0]);
         }
     }
