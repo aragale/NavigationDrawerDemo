@@ -59,18 +59,12 @@ public class SelectFootPrintFragment extends Fragment {
         fpList.setAdapter(adapter);
         fpList.setClickable(true);
 
-        //项目点击监听器
-        fpList.setOnItemClickListener((parent, view, position, id) -> {
-            //修改
-            State.INSTANCE.fpResponse = State.INSTANCE.fpResponses[position];
-
-            //添加长按弹出菜单
-            fpList.setOnCreateContextMenuListener((menu, v, menuInfo) -> {
-                menu.setHeaderTitle("操作足迹");
-                menu.add(0, 0, 0, "查看");
-                menu.add(0, 1, 0, "删除");
-                menu.add(0, 2, 0, "分享");
-            });
+        //添加长按弹出菜单
+        fpList.setOnCreateContextMenuListener((menu, v, menuInfo) -> {
+            menu.setHeaderTitle("操作足迹");
+            menu.add(0, 0, 0, "查看");
+            menu.add(0, 1, 0, "删除");
+            menu.add(0, 2, 0, "分享");
         });
         return layout;
     }
@@ -79,11 +73,11 @@ public class SelectFootPrintFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        String id = String.valueOf(info.id);
+        //获取索引，覆盖
+        State.INSTANCE.fpResponse = State.INSTANCE.fpResponses[Long.valueOf(info.id).intValue()];
         Intent intent = new Intent();
         switch (item.getItemId()) {
             case 0:
-                //State.INSTANCE.fpResponse = State.INSTANCE.fpResponses[item.getItemId()];
                 //拉取图片
                 try {
                     new GetFootPrintImagesTask().execute().get();
@@ -144,11 +138,16 @@ public class SelectFootPrintFragment extends Fragment {
         }
     }
 
-    private class DeleteFootPrintTask extends AsyncTask<String, Void, Void> {
+    private class DeleteFootPrintTask extends AsyncTask<String, Void, Boolean> {
         @Override
-        protected Void doInBackground(String... strings) {
-            HttpUtils.delete_with_session(Constants.HOST + Constants.FootPrints + "/" + strings[0], State.INSTANCE.sessionId);
-            return null;
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            Toast.makeText(getActivity(), aBoolean ? "删除成功" : "删除失败", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return HttpUtils.delete_with_session(Constants.HOST + Constants.FootPrints + "/" + strings[0], State.INSTANCE.sessionId);
         }
     }
 }
