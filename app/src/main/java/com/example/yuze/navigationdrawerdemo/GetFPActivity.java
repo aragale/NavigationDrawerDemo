@@ -3,6 +3,7 @@ package com.example.yuze.navigationdrawerdemo;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -41,7 +42,11 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
     private ImageSwitcher imageSwitcher;
 
     private String footPrintID;
-    private ArrayList<Bitmap> images = new ArrayList<>();
+
+    /**
+     * 图片列表
+     */
+    private ArrayList<Drawable> images = new ArrayList<>();
 
     private TextView title;
     private TextView description;
@@ -63,6 +68,13 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
             startActivity(intent);
         } else {
             new GetTraceTask().execute(State.INSTANCE.fpResponse.getTraceId());
+        }
+
+        //初始化图片列表
+        for (Bitmap bitmap : State.INSTANCE.footPrintImages) {
+            ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setImageBitmap(bitmap);
+            images.add(imageView.getDrawable());
         }
 
         title = findViewById(R.id.foot_print_title);
@@ -96,7 +108,7 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+        imageSwitcher.setImageDrawable(images.get(position));
     }
 
     @Override
@@ -149,25 +161,6 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             return i;
-        }
-    }
-
-    private class GetImagesTask extends AsyncTask<List<String>, Void, Void> {
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-
-        @Override
-        protected Void doInBackground(List<String>... lists) {
-            images.clear();
-            for (String url : lists[0]) {
-                Bitmap bitmap = HttpUtils.getBitmap(url);
-                if (bitmap != null) {
-                    images.add(bitmap);
-                }
-            }
-            return null;
         }
     }
 
