@@ -81,7 +81,9 @@ public class FootPrint extends AppCompatActivity implements View.OnClickListener
                 selectTxt.setTextColor(Color.rgb(75, 0, 130));
                 newImage.setImageResource(R.drawable.ic_add_white_18dp);
                 newTxt.setTextColor(Color.rgb(0, 0, 0));
-
+                selectFootPrintFragment = new SelectFootPrintFragment();
+                SelectFootPrintFragment.GetFootPrintListTask getFootPrintListTask = selectFootPrintFragment.new GetFootPrintListTask();
+                getFootPrintListTask.execute(State.INSTANCE.sessionId);
                 break;
         }
         transaction.commit();

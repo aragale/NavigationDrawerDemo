@@ -31,7 +31,6 @@ public class SelectFootPrintFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new GetFootPrintListTask().execute();
     }
 
     @Override
@@ -45,7 +44,7 @@ public class SelectFootPrintFragment extends Fragment {
         return layout;
     }
 
-    public class GetFootPrintListTask extends AsyncTask<Void, Void, String> {//wo刚才也在想这个问题。。嗯，在哪里用，这个应该是一点击查询就用了。。
+    public class GetFootPrintListTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected void onPostExecute(String s) {
@@ -53,23 +52,20 @@ public class SelectFootPrintFragment extends Fragment {
             final FPResponse[] fpResponses = JsonUtils.read(s, FPResponse[].class);
             Log.w("footprints", fpResponses.toString());
             //遍历
-            for (FPResponse r : fpResponses) {
-                if (r.getId() == null) {
-                    Log.e("footprints", "get footprints err");
-                } else {
-                    Map<String, Object> item = new HashMap<>();
-                    item.put("title", r.getTitle());
-                    item.put("time", r.getTime());
-                    item.put("description", r.getDescription());
-                    item.put("images", r.getImages());
-                    list.add(item);
-                }
+            Map<String, Object> item = new HashMap<>();
+            for (int i = 0; i < fpResponses.length; i++) {
+                item.put("title", fpResponses[i].getTitle());
+                item.put("time", fpResponses[i].getTime());
+                item.put("description", fpResponses[i].getDescription());
+                item.put("images", fpResponses[i].getImages());
+                list.add(item);
+
             }
 
         }
 
         @Override
-        protected String doInBackground(Void... strings) {
+        protected String doInBackground(String... strings) {
             return HttpUtils.get_with_session(
                     Constants.HOST + Constants.FootPrintsList +
                             "?user_id=" + State.INSTANCE.userId, State.INSTANCE.sessionId);
