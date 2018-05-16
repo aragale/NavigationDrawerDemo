@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -21,18 +19,16 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
-import com.example.yuze.navigationdrawerdemo.dto.LocationPointsResponse;
-import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
-import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class GetFPActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
         ViewSwitcher.ViewFactory {
@@ -51,7 +47,6 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
     private TextView title;
     private TextView description;
     private String traceId;
-    private List<LocationPoint> positions = new ArrayList<>();
     private Polyline polyline;
 
     @Override
@@ -66,8 +61,6 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         if (State.INSTANCE.sessionId == null) {
             Intent intent = new Intent(this, Login.class);
             startActivity(intent);
-        } else {
-            new GetTraceTask().execute(State.INSTANCE.fpResponse.getTraceId());
         }
 
         //初始化图片列表
@@ -85,12 +78,13 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
 
         mMapView = findViewById(R.id.textureMap);
         mBaiDuMap = mMapView.getMap();
-        ((MyApplication) getApplication()).mBaiDuMap = mBaiDuMap;
+        //((MyApplication) getApplication()).mBaiDuMap = mBaiDuMap;
         //设置地图类型为普通图
         mBaiDuMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+        //显示指南针
+        mBaiDuMap.setCompassEnable(true);
         //关闭缩放按钮
         mMapView.showZoomControls(true);
-
         imageSwitcher = findViewById(R.id.switcher);
         //注意在使用一个ImageSwitcher之前一定要调用setFactory方法，否则setImageResource方法报空指针异常。
         imageSwitcher.setFactory(this);
@@ -164,29 +158,19 @@ public class GetFPActivity extends AppCompatActivity implements AdapterView.OnIt
         }
     }
 
-    private class GetTraceTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPostExecute(String s) {
-            final LocationPointsResponse locationPointsResponse = JsonUtils.read(s, LocationPointsResponse.class);
-            if (locationPointsResponse.getId() == null) {
-                Log.e("GetTraceTask", "获取足迹活动");
-            } else {
-                positions = locationPointsResponse.getPositions();
-                drawRoute();
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            return HttpUtils.get_with_session(Constants.HOST + Constants.TRACES + "/" + State.INSTANCE.sessionId, strings[0]);
-        }
-    }
-
     private void drawRoute() {
         ArrayList<LatLng> latLngs = new ArrayList<>();
-        if (positions != null && positions.size() >= 2) {
-            for (int i = 0; i < positions.size(); i++) {
-                latLngs.add(new LatLng(positions.get(i).getLatitude(), positions.get(i).getLongitude()));
+        if (State.INSTANCE.positions.size() >= 2) {
+            //获取最后一个点
+            LocationPoint last = State.INSTANCE.positions.get(State.INSTANCE.positions.size() - 1);
+            //设置视图到最后一个点
+            MapStatus.Builder builder = new MapStatus.Builder();
+            LatLng ll = new LatLng(last.getLatitude(), last.getLongitude());
+            builder.target(ll).zoom(18.0f);
+            mBaiDuMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+
+            for (LocationPoint p : State.INSTANCE.positions) {
+                latLngs.add(new LatLng(p.getLatitude(), p.getLongitude()));
             }
             OverlayOptions overlayOptions = new PolylineOptions().width(6)
                     .color(0xaaff0000)

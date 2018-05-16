@@ -100,16 +100,19 @@ public class HttpUtils {
     }
 
     public static String get_with_session(String url, String session) {
-        Request request = new Request.Builder()
+        Log.i("HttpUtils", "请求_GET_" + url + "_会话_" + session);
+        final Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .addHeader("session", session)
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            return response.body().string();
+            String body = response.body().string();
+            Log.i("HttpUtils", "回应_" + body);
+            return body;
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.i("HttpUtils", "get_with_session", e);
             return null;
         }
     }

@@ -3,6 +3,7 @@ package com.example.yuze.navigationdrawerdemo;
 import android.graphics.Bitmap;
 
 import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
+import com.example.yuze.navigationdrawerdemo.dto.LocationPoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,4 +54,6 @@ public enum  State {
      * 足迹响应数组
      */
     public FPResponse[] fpResponses;
+
+    public List<LocationPoint> positions = new ArrayList<>();
 }
