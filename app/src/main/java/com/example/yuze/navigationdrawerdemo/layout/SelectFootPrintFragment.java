@@ -21,6 +21,7 @@ import com.example.yuze.navigationdrawerdemo.R;
 import com.example.yuze.navigationdrawerdemo.State;
 import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
 import com.example.yuze.navigationdrawerdemo.task.GetFootPrintImagesTask;
+import com.example.yuze.navigationdrawerdemo.task.GetTraceTask;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
 import com.example.yuze.navigationdrawerdemo.utils.TimeUtils;
@@ -82,6 +83,7 @@ public class SelectFootPrintFragment extends Fragment {
                 //拉取图片
                 try {
                     new GetFootPrintImagesTask().execute().get();
+                    new GetTraceTask().execute(State.INSTANCE.fpResponse.getTraceId()).get();
                 } catch (Exception e) {
                     Log.e("SelectFootPrintFragment", "获取足迹图片", e);
                 }
