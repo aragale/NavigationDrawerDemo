@@ -23,6 +23,7 @@ import com.example.yuze.navigationdrawerdemo.dto.FPResponse;
 import com.example.yuze.navigationdrawerdemo.task.GetFootPrintImagesTask;
 import com.example.yuze.navigationdrawerdemo.utils.HttpUtils;
 import com.example.yuze.navigationdrawerdemo.utils.JsonUtils;
+import com.example.yuze.navigationdrawerdemo.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +126,7 @@ public class SelectFootPrintFragment extends Fragment {
                     } else {
                         Map<String, Object> item = new HashMap<>();
                         item.put("title", r.getTitle());
-                        item.put("time", r.getTime());
+                        item.put("time", TimeUtils.format(r.getTime()));
                         item.put("description", r.getDescription());
                         item.put("images", r.getImages());
                         list.add(item);
