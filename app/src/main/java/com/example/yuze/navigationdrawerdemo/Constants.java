@@ -5,10 +5,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 /**
- * chang liang
+ * API常量
  */
 public class Constants {
-    public static final String HOST = "http://47.93.221.223:8002";
+    public static final String HOST = "http://176.122.157.73:8005";
 
     public static final String USERS = "/api/users";
 
